@@ -346,14 +346,14 @@ const response = await fetch(url, {
         🔗 From URL
      </p>
        <p
-         onClick={() => {
-          setShowDrop(false);
-          openGoogleDrivePicker();
-       }}
-        className="p-2 hover:bg-gray-100 cursor-pointer"
-           >
-        🔄 From Google Drive
-       </p>
+  onClick={() => gapiLoaded && pickerLoaded && openGoogleDrivePicker()}
+  className={`p-2 hover:bg-gray-100 cursor-pointer ${
+    !gapiLoaded || !pickerLoaded ? "opacity-50 cursor-not-allowed" : ""
+  }`}
+>
+  🔄 From Google Drive
+</p>
+
 
        <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
          📦 From Dropbox
