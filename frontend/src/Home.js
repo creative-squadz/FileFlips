@@ -25,6 +25,7 @@ export default function Home({
   const [downloadUrl, setDownloadUrl] = useState("");
   const messageRef = useRef(null);
   const navigate = useNavigate();
+  const [showDrop, setShowDrop] = useState(false);
 
   const fromTo = (index) => {
     const temp = new Set(
@@ -203,29 +204,62 @@ export default function Home({
                 <p className="absolute border-t-2 w-1/2 border-black"></p>
               </div>
               <article className="flex flex-wrap gap-4 justify-center items-center shrink">
-                <label
-                  htmlFor="chooseFile"
-                  className={`${
-                    file.length > 0 ? "bg-green-300" : "bg-gray-400"
-                  } rounded-md flex flex-col p-4 w-full xsm:w-fit hover:bg-gray-300 cursor-pointer`}
-                >
-                  {file.length > 0 ? (
-                    file.map((f, index) => (
-                      <p key={`file/${index}`}>{f.name}</p>
-                    ))
-                  ) : (
-                    <p>Choose File</p>
-                  )}
-                </label>
-                <input
-                  id="chooseFile"
-                  name="chooseFile"
-                  type="file"
-                  accept={`.${inputFormat}`}
-                  onChange={handleFileChange}
-                  multiple
-                  className="hidden p-2 rounded-md bg-secondary1 cursor-pointer w-full shrink"
-                />
+                
+
+                
+ {/* ---------- ---------- */}
+ <div className="relative w-full xsm:w-fit">
+   <button
+     onClick={() => setShowDrop(!showDrop)}
+     className="bg-green-400 px-4 py-2 rounded-md flex items-center gap-2 font-bold"
+   >
+     Choose Files <IoMdArrowDropdown />
+   </button>
+   {showDrop && (
+     <div className="absolute mt-2 w-56 bg-white shadow-lg rounded-md p-2 z-10 text-left">
+       <p
+         onClick={() => {
+           setShowDrop(false);
+           document.getElementById("chooseFile").click();
+         }}
+         className="p-2 hover:bg-gray-100 cursor-pointer flex gap-2"
+       >
+         📁 From my device
+       </p>
+       <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
+         🔗 From URL
+       </p>
+       <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
+         🔄 From Google Drive
+       </p>
+       <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
+         📦 From Dropbox
+       </p>
+       <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
+         ☁️ From OneDrive
+       </p>
+     </div>
+   )}
+ </div>
+ {/* Hidden File Input */}
+ <input
+   id="chooseFile"
+   type="file"
+   accept={`.${inputFormat}`}
+   onChange={handleFileChange}
+   className="hidden"
+ />
+ {file.length > 0 && (
+   <p className="text-white font-bold">{file[0].name}</p>
+ )}
+                
+                
+                
+                
+                
+                
+                
+                
                 <button
                   onClick={(e) => handleSubmit(e)}
                   className={`${
