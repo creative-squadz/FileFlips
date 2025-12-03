@@ -12,7 +12,7 @@ export const convertFile = async (req, res) => {
       return res.status(400).json({ message: "Missing outputFormat" });
     }
 
-    return res.status(200).json({ message: "short circuit" }); //TODO : Delete this line after testing
+   // return res.status(200).json({ message: "short circuit" }); //TODO : Delete this line after testing
 
     const job = await cloudConvert.jobs.create({
       tasks: {
