@@ -174,7 +174,7 @@ export default function SignUp() {
                 id="first_name"
                 value={userCredentials.first_name}
                 className="border-[1px] border-black rounded-md p-2 -mt-3 w-full"
-                placeholder="Harish"
+                placeholder="FristName"
                 aria-required
                 onChange={(e) =>
                   setUserCredentials((props) => ({
@@ -221,7 +221,7 @@ export default function SignUp() {
                 id="last_name"
                 value={userCredentials.last_name}
                 className="border-[1px] border-black rounded-md p-2 -mt-3 w-full"
-                placeholder="Nigam"
+                placeholder="Lastname"
                 aria-required
                 onChange={(e) =>
                   setUserCredentials((props) => ({
@@ -274,7 +274,7 @@ export default function SignUp() {
                 id="mobile_no"
                 value={userCredentials.mobile_no}
                 className="border-[1px] border-black rounded-md p-2 -mt-3 w-full"
-                placeholder="7894561230"
+                placeholder="7564044692"
                 aria-required
                 onChange={(e) =>
                   setUserCredentials((props) => ({
