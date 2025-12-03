@@ -26,6 +26,9 @@ export default function Home({
   const messageRef = useRef(null);
   const navigate = useNavigate();
   const [showDrop, setShowDrop] = useState(false);
+  const [showUrlBox, setShowUrlBox] = useState(false);
+  const [urlInput, setUrlInput] = useState("");
+
 
   const fromTo = (index) => {
     const temp = new Set(
@@ -60,6 +63,30 @@ export default function Home({
       messageRef.current.textContent = `Max File Size : ${tempUser.maxSize}MB`;
       return;
     }
+  const handleURLUpload = async () => {
+  try {
+    messageRef.current.style.color = "blue";
+    messageRef.current.textContent = "Fetching file from URL...";
+
+    const response = await fetch(urlInput);
+    if (!response.ok) throw new Error("Unable to fetch file");
+
+    const blob = await response.blob();
+    const fileName = urlInput.split("/").pop() || `download.${inputFormat}`;
+    const fileFromUrl = new File([blob], fileName, { type: blob.type });
+
+    setFile([fileFromUrl]);
+    setShowUrlBox(false);
+    setDownloadUrl("");
+
+    messageRef.current.style.color = "green";
+    messageRef.current.textContent = "File fetched successfully!";
+  } catch (err) {
+    messageRef.current.style.color = "red";
+    messageRef.current.textContent = "Failed to fetch file from URL!";
+  }
+};
+
 
     const formData = new FormData();
     formData.append("file", file[0]);
@@ -229,9 +256,16 @@ const response = await fetch(url, {
        >
          📁 From my device
        </p>
-       <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
-         🔗 From URL
-       </p>
+       <p
+  onClick={() => {
+    setShowDrop(false);
+    setShowUrlBox(true);
+  }}
+  className="p-2 hover:bg-gray-100 cursor-pointer"
+>
+  🔗 From URL
+</p>
+
        <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
          🔄 From Google Drive
        </p>
@@ -444,6 +478,37 @@ const response = await fetch(url, {
           </article>
         ))}
       </article>
+          {showUrlBox && (
+  <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+    <div className="bg-white p-6 rounded-md w-80 flex flex-col gap-4">
+      <h2 className="text-xl font-bold">Upload from URL</h2>
+
+      <input
+        type="text"
+        value={urlInput}
+        onChange={(e) => setUrlInput(e.target.value)}
+        placeholder="Enter file URL"
+        className="border p-2 rounded-md"
+      />
+
+      <div className="flex gap-2 justify-end">
+        <button
+          className="px-4 py-2 bg-gray-300 rounded-md"
+          onClick={() => setShowUrlBox(false)}
+        >
+          Cancel
+        </button>
+        <button
+          className="px-4 py-2 bg-green-600 text-white rounded-md"
+          onClick={handleURLUpload}
+        >
+          Fetch File
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </section>
   );
 }
