@@ -31,6 +31,36 @@ export default function Home({
  const [showUrlBox, setShowUrlBox] = useState(false);
  const [urlInput, setUrlInput] = useState("");
 
+ const GOOGLE_CLIENT_ID = "782728745677-cg4erqt1clgfkh6676gohnu42jnri7o8.apps.googleusercontent.com
+";
+const GOOGLE_API_KEY = "AQ.Ab8RN6Lkj7ExcMxz3LpWEPP-aNI630OEAw_o1-_3UbhesRlOLQ";
+const SCOPE = "https://www.googleapis.com/auth/drive.readonly";
+//
+const [gapiLoaded, setGapiLoaded] = useState(false);
+const [pickerLoaded, setPickerLoaded] = useState(false);
+
+useEffect(() => {
+  window.gapi.load("client:auth2", () => {
+    window.gapi.client
+      .init({
+        apiKey: GOOGLE_API_KEY,
+        clientId: GOOGLE_CLIENT_ID,
+        discoveryDocs: [
+          "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
+        ],
+        scope: SCOPE,
+      })
+      .then(() => setGapiLoaded(true));
+  });
+
+  window.gapi.load("picker", () => {
+    setPickerLoaded(true);
+  });
+}, []);
+
+  
+
+  
   const fromTo = (index) => {
     const temp = new Set(
       JSON.parse(tempUser.formatAllowed)
@@ -71,6 +101,59 @@ const handleURLUpload = async () => {
     messageRef.current.textContent = "Failed to fetch file from URL!";
   }
 };
+
+  //google drive picker function
+
+  const openGoogleDrivePicker = () => {
+  if (!gapiLoaded || !pickerLoaded) {
+    alert("Google API loading...");
+    return;
+  }
+
+  const auth = window.gapi.auth2.getAuthInstance();
+
+  auth.signIn().then(() => {
+    const token = auth.currentUser.get().getAuthResponse().access_token;
+
+    const view = new window.google.picker.DocsView()
+      .setIncludeFolders(false)
+      .setMimeTypes("*/*");
+
+    const picker = new window.google.picker.PickerBuilder()
+      .setAppId(GOOGLE_CLIENT_ID)
+      .setOAuthToken(token)
+      .addView(view)
+      .setCallback(pickerCallback)
+      .build();
+
+    picker.setVisible(true);
+  });
+};
+
+const pickerCallback = async (data) => {
+  if (data.action === window.google.picker.Action.PICKED) {
+    const fileId = data.docs[0].id;
+
+    const response = await window.gapi.client.drive.files.get({
+      fileId: fileId,
+      alt: "media",
+    });
+
+    const fileBlob = new Blob([response.body]);
+    const fileName = data.docs[0].name;
+
+    const finalFile = new File([fileBlob], fileName);
+
+    setFile([finalFile]);
+    setDownloadUrl("");
+    messageRef.current.textContent = "Google Drive file added!";
+    messageRef.current.style.color = "green";
+  }
+};
+
+
+
+  
   const handleSubmit = async (e) => {
     if (!file || file.length === 0) {
       e.target.style.boxShadow = "0.1rem 0.1rem 2rem 0.5rem red inset";
@@ -262,9 +345,16 @@ const response = await fetch(url, {
       >
         🔗 From URL
      </p>
-       <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
-         🔄 From Google Drive
+       <p
+         onClick={() => {
+          setShowDrop(false);
+          openGoogleDrivePicker();
+       }}
+        className="p-2 hover:bg-gray-100 cursor-pointer"
+           >
+        🔄 From Google Drive
        </p>
+
        <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
          📦 From Dropbox
        </p>
