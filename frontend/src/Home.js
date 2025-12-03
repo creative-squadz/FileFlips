@@ -21,7 +21,7 @@ export default function Home({
   const [file, setFile] = useState([]);
   const [avilableFormat, setAvailableFormats] = useState({ from: [], to: [] });
   const [inputFormat, setInputFormat] = useState("pdf");
-  const [outputFormat, setOutputFormat] = useState("pdf");
+  const [outputFormat, setOutputFormat] = useState("docx");
   const [downloadUrl, setDownloadUrl] = useState("");
   const messageRef = useRef(null);
   const navigate = useNavigate();
@@ -71,13 +71,16 @@ export default function Home({
       messageRef.current.textContent = "Uploading and converting file...";
       setDownloadUrl("");
 
-      const BACKEND = process.env.REACT_APP_BACKEND_HOST.replace(/\/+$/, ""); const url = ${BACKEND}/user_entry;
-      const response = await fetch(url, {
-        headers: { "content-type": "application/json" },
-        method: "POST",
-        body: JSON.stringify({ fingerprint, tempUser, params }),
-        credentials: "include",
-      });
+      const BACKEND = process.env.REACT_APP_BACKEND_HOST.replace(/\/+$/, ""); 
+const url = `${BACKEND}/user_entry`;
+
+const response = await fetch(url, {
+  headers: { "content-type": "application/json" },
+  method: "POST",
+  body: JSON.stringify({ fingerprint, tempUser, params }),
+  credentials: "include",
+});
+
       const data = await response.json();
       if (!response.ok) {
         messageRef.current.style.color = "red";
@@ -443,4 +446,4 @@ export default function Home({
       </article>
     </section>
   );
-}
+}                                     
