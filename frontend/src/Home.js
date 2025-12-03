@@ -71,13 +71,16 @@ export default function Home({
       messageRef.current.textContent = "Uploading and converting file...";
       setDownloadUrl("");
 
-      const url = `${process.env.REACT_APP_BACKEND_HOST}/user_entry`;
-      const response = await fetch(url, {
-        headers: { "content-type": "application/json" },
-        method: "POST",
-        body: JSON.stringify({ fingerprint, tempUser, params }),
-        credentials: "include",
-      });
+      const BACKEND = process.env.REACT_APP_BACKEND_HOST.replace(/\/+$/, ""); 
+const url = `${BACKEND}/user_entry`;
+
+const response = await fetch(url, {
+  headers: { "content-type": "application/json" },
+  method: "POST",
+  body: JSON.stringify({ fingerprint, tempUser, params }),
+  credentials: "include",
+});
+
       const data = await response.json();
       if (!response.ok) {
         messageRef.current.style.color = "red";
