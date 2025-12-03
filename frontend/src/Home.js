@@ -6,6 +6,7 @@ import siteInfo from "./assets/Site_Details/Primary/siteInfo";
 import FAQ from "./assets/Site_Details/Secondary/faq";
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 export default function Home({
   tempUses,
   limitExceeded,
@@ -26,18 +27,20 @@ export default function Home({
   const messageRef = useRef(null);
   const navigate = useNavigate();
   const [showDrop, setShowDrop] = useState(false);
+
+  // URL Upload Popup State
   const [showUrlBox, setShowUrlBox] = useState(false);
   const [urlInput, setUrlInput] = useState("");
-
 
   const fromTo = (index) => {
     const temp = new Set(
       JSON.parse(tempUser.formatAllowed)
         .map((item) => item.split("->"))
-        .map((inthere) => inthere[index])
+        .map((x) => x[index])
     );
     return [...temp];
   };
+
   useEffect(() => {
     setAvailableFormats({
       from: fromTo(0),
@@ -50,6 +53,32 @@ export default function Home({
     setFile((prev) => [...prev, e.target.files[0]]);
     setDownloadUrl("");
   };
+
+  // ✅ FIXED — URL UPLOAD FUNCTION (now outside handleSubmit)
+  const handleURLUpload = async () => {
+    try {
+      messageRef.current.style.color = "blue";
+      messageRef.current.textContent = "Fetching file from URL...";
+
+      const response = await fetch(urlInput);
+      if (!response.ok) throw new Error("Unable to fetch file");
+
+      const blob = await response.blob();
+      const fileName = urlInput.split("/").pop() || `download.${inputFormat}`;
+      const fileFromUrl = new File([blob], fileName, { type: blob.type });
+
+      setFile([fileFromUrl]);
+      setShowUrlBox(false);
+      setDownloadUrl("");
+
+      messageRef.current.style.color = "green";
+      messageRef.current.textContent = "File fetched successfully!";
+    } catch (err) {
+      messageRef.current.style.color = "red";
+      messageRef.current.textContent = "Failed to fetch file from URL!";
+    }
+  };
+
   const handleSubmit = async (e) => {
     if (!file || file.length === 0) {
       e.target.style.boxShadow = "0.1rem 0.1rem 2rem 0.5rem red inset";
@@ -57,36 +86,13 @@ export default function Home({
       messageRef.current.textContent = "Please Choose file to move forward !";
       return;
     }
+
     if ((file[0].size / 1024 / 1024).toFixed(2) > tempUser.maxSize) {
       e.target.style.boxShadow = "0.1rem 0.1rem 2rem 0.5rem red inset";
       messageRef.current.style.color = "red";
       messageRef.current.textContent = `Max File Size : ${tempUser.maxSize}MB`;
       return;
     }
-  const handleURLUpload = async () => {
-  try {
-    messageRef.current.style.color = "blue";
-    messageRef.current.textContent = "Fetching file from URL...";
-
-    const response = await fetch(urlInput);
-    if (!response.ok) throw new Error("Unable to fetch file");
-
-    const blob = await response.blob();
-    const fileName = urlInput.split("/").pop() || `download.${inputFormat}`;
-    const fileFromUrl = new File([blob], fileName, { type: blob.type });
-
-    setFile([fileFromUrl]);
-    setShowUrlBox(false);
-    setDownloadUrl("");
-
-    messageRef.current.style.color = "green";
-    messageRef.current.textContent = "File fetched successfully!";
-  } catch (err) {
-    messageRef.current.style.color = "red";
-    messageRef.current.textContent = "Failed to fetch file from URL!";
-  }
-};
-
 
     const formData = new FormData();
     formData.append("file", file[0]);
@@ -98,20 +104,22 @@ export default function Home({
       messageRef.current.textContent = "Uploading and converting file...";
       setDownloadUrl("");
 
-      const BACKEND = process.env.REACT_APP_BACKEND_HOST.replace(/\/+$/, ""); 
-const url = `${BACKEND}/user_entry`;
+      const BACKEND = process.env.REACT_APP_BACKEND_HOST.replace(/\/+$/, "");
+      const url = `${BACKEND}/user_entry`;
 
-const response = await fetch(url, {
-  headers: { "content-type": "application/json" },
-  method: "POST",
-  body: JSON.stringify({ fingerprint, tempUser, params }),
-  credentials: "include",
-});
+      const response = await fetch(url, {
+        headers: { "content-type": "application/json" },
+        method: "POST",
+        body: JSON.stringify({ fingerprint, tempUser, params }),
+        credentials: "include",
+      });
 
       const data = await response.json();
+
       if (!response.ok) {
         messageRef.current.style.color = "red";
         messageRef.current.textContent = `Upload failed : ${data.message}`;
+
         if (response.status === 421) {
           setLimitExceeded(true);
           setTempUser({
@@ -121,6 +129,7 @@ const response = await fetch(url, {
             formatAllowed: data.lastDBValue.formatAllowed,
           });
         }
+
         if (response.status === 406) {
           setTempUser({
             used: data.lastDBValue.used,
@@ -129,51 +138,47 @@ const response = await fetch(url, {
             formatAllowed: data.lastDBValue.formatAllowed,
           });
         }
+
         if (response.status === 401) {
-          setTimeout(() => {
-            navigate("/signin");
-          }, 2000);
+          setTimeout(() => navigate("/signin"), 2000);
         }
+
         return;
       }
-      try {
-        const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_HOST}/api/convert`,
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
 
-        const data = await response.json();
-
-        if (response.ok) {
-          tempUses();
-          messageRef.current.style.color = "#008000";
-          messageRef.current.textContent = data.message;
-          setDownloadUrl(data.fileUrl || "");
-        } else {
-          e.target.style.boxShadow = "0.1rem 0.1rem 2rem 0.5rem red inset";
-          messageRef.current.style.color = "red";
-          messageRef.current.textContent = `Upload failed : ${data.message}`;
+      const convertRes = await fetch(
+        `${process.env.REACT_APP_BACKEND_HOST}/api/convert`,
+        {
+          method: "POST",
+          body: formData,
         }
-      } catch (error) {
+      );
+
+      const convertData = await convertRes.json();
+
+      if (convertRes.ok) {
+        tempUses();
+        messageRef.current.style.color = "#008000";
+        messageRef.current.textContent = convertData.message;
+        setDownloadUrl(convertData.fileUrl || "");
+      } else {
         e.target.style.boxShadow = "0.1rem 0.1rem 2rem 0.5rem red inset";
         messageRef.current.style.color = "red";
-        messageRef.current.textContent = `Error : ${error.message}`;
-        setDownloadUrl("");
+        messageRef.current.textContent = `Upload failed : ${convertData.message}`;
       }
     } catch (error) {
-      console.log(error);
       e.target.style.boxShadow = "0.1rem 0.1rem 2rem 0.5rem red inset";
       messageRef.current.style.color = "red";
       messageRef.current.textContent = `Error : ${error.message}`;
+      setDownloadUrl("");
     }
   };
+
   return (
     <section className="flex flex-col items-center gap-4 p-4 text-center py-12">
       <h1 className="text-4xl">Online File Converter</h1>
       <p className="text-gray-600 text-xl">Select File to convert</p>
+
       {/* upload section */}
       <article className="p-8 w-full md:w-[75%] lg:w-1/2 rounded-md bg-secondary1">
         <article className="p-4 rounded-md flex flex-col items-center gap-4 bg-secondary2">
@@ -183,7 +188,7 @@ const response = await fetch(url, {
                 You have excedded your free trial !
               </strong>
               <Link to={params.email ? "plans" : "/signin"}>
-                <button className="border-2 border-secondary1 rounded-md py-2 px-4 font-bold focus:shadow-[0.1rem_0.1rem_2rem_0.5rem_green_inset] bg-primary text-white">
+                <button className="border-2 border-secondary1 rounded-md py-2 px-4 font-bold bg-primary text-white">
                   Choose Plan
                 </button>
               </Link>
@@ -218,10 +223,9 @@ const response = await fetch(url, {
                   "border-green-500"
                 );
 
-                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                if (e.dataTransfer.files?.length > 0) {
                   const droppedFile = e.dataTransfer.files[0];
-                  setFile([]);
-                  setFile((prev) => [...prev, droppedFile]);
+                  setFile([droppedFile]);
                   setDownloadUrl("");
                   e.dataTransfer.clearData();
                 }
@@ -229,163 +233,113 @@ const response = await fetch(url, {
             >
               <FiUpload className="text-5xl text-primary" />
               <p className="text-white">Drag your files here or upload</p>
+
               <div className="flex relative w-full text-secondary1 justify-center items-center">
                 <p className="p-2 z-[1] bg-secondary2">OR</p>
                 <p className="absolute border-t-2 w-1/2 border-black"></p>
               </div>
-              <article className="flex flex-wrap gap-4 justify-center items-center shrink">
-                
 
-                
- {/* ---------- ---------- */}
- <div className="relative w-full xsm:w-fit">
-   <button
-     onClick={() => setShowDrop(!showDrop)}
-     className="bg-green-400 px-4 py-2 rounded-md flex items-center gap-2 font-bold"
-   >
-     Choose Files <IoMdArrowDropdown />
-   </button>
-   {showDrop && (
-     <div className="absolute mt-2 w-56 bg-white shadow-lg rounded-md p-2 z-10 text-left">
-       <p
-         onClick={() => {
-           setShowDrop(false);
-           document.getElementById("chooseFile").click();
-         }}
-         className="p-2 hover:bg-gray-100 cursor-pointer flex gap-2"
-       >
-         📁 From my device
-       </p>
-       <p
-        onClick={() => {
-         setShowDrop(false);
-         setShowUrlBox(true);
-        }}
-       className="p-2 hover:bg-gray-100 cursor-pointer"
-       >
-       🔗 From URL
-       </p>
-
-       <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
-         🔄 From Google Drive
-       </p>
-       <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
-         📦 From Dropbox
-       </p>
-       <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
-         ☁️ From OneDrive
-       </p>
-     </div>
-   )}
- </div>
- {/* Hidden File Input */}
- <input
-   id="chooseFile"
-   type="file"
-   accept={`.${inputFormat}`}
-   onChange={handleFileChange}
-   className="hidden"
- />
- {file.length > 0 && (
-   <p className="text-white font-bold">{file[0].name}</p>
- )}
-                
-                
-                
-                
-                
-                
-                
-                
+              {/* Choose file dropdown */}
+              <div className="relative w-full xsm:w-fit">
                 <button
-                  onClick={(e) => handleSubmit(e)}
-                  className={`${
-                    downloadUrl.length >= 2 ? "hidden" : "inline-block"
-                  } border-2 border-secondary1 rounded-md py-2 px-4 font-bold focus:shadow-[0.1rem_0.1rem_2rem_0.5rem_green_inset] bg-primary text-white`}
+                  onClick={() => setShowDrop(!showDrop)}
+                  className="bg-green-400 px-4 py-2 rounded-md flex items-center gap-2 font-bold"
                 >
-                  Convert
+                  Choose Files <IoMdArrowDropdown />
                 </button>
-              </article>
-              <article className="flex gap-2 flex-wrap w-full justify-center items-center">
-                <div className="flex flex-nowrap items-center gap-2">
-                  <label
-                    htmlFor="from"
-                    className="whitespace-nowrap text-white font-bold"
-                  >
-                    From :{" "}
-                  </label>
-                  <select
-                    id="from"
-                    name="from"
-                    value={inputFormat}
-                    onChange={(e) => setInputFormat(e.target.value)}
-                    className="bg-secondary1 p-2 rounded-md"
-                  >
-                    {avilableFormat.from.map((inthere, index) => (
-                      <option
-                        key={`from/${index}`}
-                        value={inthere.trim().toLowerCase()}
-                      >
-                        {inthere.toUpperCase()}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex flex-nowrap items-center gap-2">
-                  <label
-                    htmlFor="from"
-                    className="whitespace-nowrap text-white font-bold"
-                  >
-                    To :{" "}
-                  </label>
-                  <select
-                    id="to"
-                    name="to"
-                    value={outputFormat}
-                    onChange={(e) => setOutputFormat(e.target.value)}
-                    className="bg-secondary1 p-2 rounded-md"
-                  >
-                    {JSON.parse(tempUser.formatAllowed)
-                      .map((item) => item.split("->"))
-                      .map((item, index) => {
-                        if (
-                          item[0].trim().toLowerCase() ===
-                          inputFormat.toLowerCase()
-                        ) {
-                          return (
-                            <option
-                              key={`to/${index}`}
-                              value={item[1].toLowerCase()}
-                            >
-                              {item[1].toUpperCase()}
-                            </option>
-                          );
-                        }
-                      })}
-                  </select>
-                </div>
-              </article>
+
+                {showDrop && (
+                  <div className="absolute mt-2 w-56 bg-white shadow-lg rounded-md p-2 z-10 text-left">
+                    <p
+                      onClick={() => {
+                        setShowDrop(false);
+                        document.getElementById("chooseFile").click();
+                      }}
+                      className="p-2 hover:bg-gray-100 cursor-pointer flex gap-2"
+                    >
+                      📁 From my device
+                    </p>
+
+                    <p
+                      onClick={() => {
+                        setShowDrop(false);
+                        setShowUrlBox(true);
+                      }}
+                      className="p-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      🔗 From URL
+                    </p>
+
+                    <p
+                      onClick={() =>
+                        alert("This feature will be integrated in future")
+                      }
+                      className="p-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      🔄 From Google Drive
+                    </p>
+                    <p
+                      onClick={() =>
+                        alert("This feature will be integrated in future")
+                      }
+                      className="p-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      📦 From Dropbox
+                    </p>
+                    <p
+                      onClick={() =>
+                        alert("This feature will be integrated in future")
+                      }
+                      className="p-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      ☁️ From OneDrive
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <input
+                id="chooseFile"
+                type="file"
+                accept={`.${inputFormat}`}
+                onChange={handleFileChange}
+                className="hidden"
+              />
+
+              {file.length > 0 && (
+                <p className="text-white font-bold">{file[0].name}</p>
+              )}
+
+              <button
+                onClick={(e) => handleSubmit(e)}
+                className={`${
+                  downloadUrl.length >= 2 ? "hidden" : "inline-block"
+                } border-2 border-secondary1 rounded-md py-2 px-4 font-bold bg-primary text-white`}
+              >
+                Convert
+              </button>
             </article>
           )}
+
           {downloadUrl && (
             <a
               href={downloadUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="border-2 p-4 rounded-md border-green-500 shadow-[0.1rem_0.1rem_2rem_0.5rem_green_inset] font-bold focus:shadow-[0.1rem_0.1rem_2rem_0.5rem_blue_inset]"
+              className="border-2 p-4 rounded-md border-green-500 font-bold"
             >
               Download Converted File
             </a>
           )}
+
           <p
             ref={messageRef}
             className="text-secondary1 animate-pulse duration-200 font-bold"
-          >
-            {/* {`Up to ${tempUser.maxSize} MB`} */}
-          </p>
+          ></p>
         </article>
       </article>
-      {/* process section */}
+
+      {/* process */}
       <article className="p-8 w-full rounded-md flex flex-col md:flex-row md:flex-wrap gap-4">
         {Process().map((item, index) => (
           <article
@@ -402,6 +356,7 @@ const response = await fetch(url, {
           </article>
         ))}
       </article>
+
       {/* categories */}
       {category && (
         <article
@@ -414,7 +369,7 @@ const response = await fetch(url, {
               <Link
                 to={params.email ? item.path : "/signin"}
                 key={`category/${index}`}
-                className="flex flex-col gap-2 items-center border-2 rounded-md shadow-[0.1rem_0.1rem_0.5rem_0.05rem_gray] p-4 grow"
+                className="flex flex-col gap-2 items-center border-2 rounded-md p-4 grow"
               >
                 <item.icon className="text-6xl text-gray-500" />
                 <p className="">{item.name}</p>
@@ -423,6 +378,7 @@ const response = await fetch(url, {
           </article>
         </article>
       )}
+
       {/* about */}
       <article className="w-full flex flex-col md:w-[80%] lg:w-[70%] gap-4">
         <h3 className="text-2xl font-semibold text-left">About ConvertFiles</h3>
@@ -435,6 +391,7 @@ const response = await fetch(url, {
           </p>
         ))}
       </article>
+
       {/* FAQ */}
       <article className="w-full flex flex-col md:w-[80%] lg:w-[70%] gap-4">
         <h3 className="text-2xl font-semibold text-left">
@@ -443,30 +400,25 @@ const response = await fetch(url, {
         {faq.map((item, index) => (
           <article
             key={`faq/${index}`}
-            className="p-4 rounded-md flex flex-col gap-1 border-2 shadow-[0.01rem_0.01rem_0.2rem_0.01rem_black] transition-all"
+            className="p-4 rounded-md flex flex-col gap-1 border-2 shadow-sm"
           >
             <div
               className="flex gap-8 justify-between items-center cursor-pointer"
               onClick={() =>
                 setFAQ((prev) =>
-                  prev.map((inthere) => {
-                    if (inthere.id === item.id) {
-                      return { ...inthere, status: !inthere.status };
-                    } else {
-                      return inthere;
-                    }
+                  prev.map((x) => {
+                    if (x.id === item.id) return { ...x, status: !x.status };
+                    return x;
                   })
                 )
               }
             >
               <h3 className="text-left">{item.question}</h3>
-              <div>
-                <IoMdArrowDropdown
-                  className={`cursor-pointer text-3xl text-gray-600 hover:text-gray-800 transition-all ${
-                    item.status ? "rotate-180" : "rotate-0"
-                  }`}
-                />
-              </div>
+              <IoMdArrowDropdown
+                className={`cursor-pointer text-3xl text-gray-600 transition-all ${
+                  item.status ? "rotate-180" : "rotate-0"
+                }`}
+              />
             </div>
             <p
               className={`${
@@ -478,37 +430,38 @@ const response = await fetch(url, {
           </article>
         ))}
       </article>
-          {showUrlBox && (
-  <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-    <div className="bg-white p-6 rounded-md w-80 flex flex-col gap-4">
-      <h2 className="text-xl font-bold">Upload from URL</h2>
 
-      <input
-        type="text"
-        value={urlInput}
-        onChange={(e) => setUrlInput(e.target.value)}
-        placeholder="Enter file URL"
-        className="border p-2 rounded-md"
-      />
+      {/* URL Upload Popup (Correct Position) */}
+      {showUrlBox && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-md w-80 flex flex-col gap-4">
+            <h2 className="text-xl font-bold">Upload from URL</h2>
 
-      <div className="flex gap-2 justify-end">
-        <button
-          className="px-4 py-2 bg-gray-300 rounded-md"
-          onClick={() => setShowUrlBox(false)}
-        >
-          Cancel
-        </button>
-        <button
-          className="px-4 py-2 bg-green-600 text-white rounded-md"
-          onClick={handleURLUpload}
-        >
-          Fetch File
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            <input
+              type="text"
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              placeholder="Enter file URL"
+              className="border p-2 rounded-md"
+            />
 
+            <div className="flex gap-2 justify-end">
+              <button
+                className="px-4 py-2 bg-gray-300 rounded-md"
+                onClick={() => setShowUrlBox(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-green-600 text-white rounded-md"
+                onClick={handleURLUpload}
+              >
+                Fetch File
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
