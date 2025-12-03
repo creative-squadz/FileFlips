@@ -31,8 +31,8 @@ export default function Home({
  const [showUrlBox, setShowUrlBox] = useState(false);
  const [urlInput, setUrlInput] = useState("");
 
- const GOOGLE_CLIENT_ID = "782728745677-cg4erqt1clgfkh6676gohnu42jnri7o8.apps.googleusercontent.com
-";
+ const GOOGLE_CLIENT_ID = "782728745677-cg4erqt1clgfkh6676gohnu42jnri7o8.apps.googleusercontent.com";
+
 const GOOGLE_API_KEY = "AQ.Ab8RN6Lkj7ExcMxz3LpWEPP-aNI630OEAw_o1-_3UbhesRlOLQ";
 const SCOPE = "https://www.googleapis.com/auth/drive.readonly";
 //
