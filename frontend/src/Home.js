@@ -345,14 +345,19 @@ const response = await fetch(url, {
       >
         🔗 From URL
      </p>
-       <p
-  onClick={() => gapiLoaded && pickerLoaded && openGoogleDrivePicker()}
-  className={`p-2 hover:bg-gray-100 cursor-pointer ${
-    !gapiLoaded || !pickerLoaded ? "opacity-50 cursor-not-allowed" : ""
-  }`}
+      <p
+  onClick={() => {
+    if (!gapiLoaded || !pickerLoaded) {
+      alert("Google API loading, please wait a few seconds...");
+      return;
+    }
+    openGoogleDrivePicker();
+  }}
+  className="p-2 hover:bg-gray-100 cursor-pointer"
 >
   🔄 From Google Drive
 </p>
+
 
 
        <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
