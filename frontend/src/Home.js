@@ -257,14 +257,14 @@ const response = await fetch(url, {
          📁 From my device
        </p>
        <p
-  onClick={() => {
-    setShowDrop(false);
-    setShowUrlBox(true);
-  }}
-  className="p-2 hover:bg-gray-100 cursor-pointer"
->
-  🔗 From URL
-</p>
+        onClick={() => {
+         setShowDrop(false);
+         setShowUrlBox(true);
+        }}
+       className="p-2 hover:bg-gray-100 cursor-pointer"
+       >
+       🔗 From URL
+       </p>
 
        <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
          🔄 From Google Drive
