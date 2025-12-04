@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function DOCXconverter() {
-  return (
-    <section className="flex w-screen h-screen items-center justify-center">
-      <h1>Coming Soon</h1>
-    </section>
-  );
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Redirect to home page immediately
+    navigate("/");
+  }, [navigate]);
+
+  return null; // Optional: nothing is rendered since we're redirecting
 }
