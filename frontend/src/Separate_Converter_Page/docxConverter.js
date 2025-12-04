@@ -5,9 +5,12 @@ export default function DOCXconverter() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect to Home with pre-selected formats
-    navigate("/home", { state: { input: "pdf", output: "docx" } });
+    const timeout = setTimeout(() => {
+      navigate("/home", { state: { input: "pdf", output: "docx" } });
+    }, 0); // Thoda delay ensures router ready
+
+    return () => clearTimeout(timeout);
   }, [navigate]);
 
-  return null; // Nothing to show
+  return null;
 }
