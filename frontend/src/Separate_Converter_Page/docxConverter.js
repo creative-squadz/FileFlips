@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function docxConverter() {
+export default function DOCXconverter() {
   return (
     <section className="flex w-screen h-screen items-center justify-center">
       <h1>Coming Soon</h1>
