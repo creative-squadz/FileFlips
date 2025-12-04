@@ -1,3 +1,5 @@
+import { useLocation } from "react-router-dom";
+
 import { FiUpload } from "react-icons/fi";
 import { IoMdArrowDropdown } from "react-icons/io";
 import Process from "./assets/Site_Details/Secondary/process";
