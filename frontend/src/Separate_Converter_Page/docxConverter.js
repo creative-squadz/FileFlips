@@ -5,9 +5,9 @@ export default function DOCXconverter() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect to home page immediately
-    navigate("/");
+    // Client-side navigation to home page
+    navigate("/", { replace: true });
   }, [navigate]);
 
-  return null; // Optional: nothing is rendered since we're redirecting
+  return null; // nothing rendered
 }
