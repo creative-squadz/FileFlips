@@ -7,7 +7,7 @@ export default function DOCXconverter() {
   useEffect(() => {
     // Redirect to Home with pre-selected formats
     navigate("/home", { state: { input: "pdf", output: "docx" } });
-  }, []);
+  }, [navigate]);
 
-  return null; // No UI needed because it redirects immediately
+  return null; // Nothing to show
 }
