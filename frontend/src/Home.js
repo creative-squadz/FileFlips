@@ -22,8 +22,15 @@ export default function Home({
   const [faq, setFAQ] = useState(FAQ());
   const [file, setFile] = useState([]);
   const [avilableFormat, setAvailableFormats] = useState({ from: [], to: [] });
-  const [inputFormat, setInputFormat] = useState("pdf");
-  const [outputFormat, setOutputFormat] = useState("docx");
+  
+
+const location = useLocation();
+const defaultInput = location.state?.input || "pdf";
+const defaultOutput = location.state?.output || "docx";
+
+const [inputFormat, setInputFormat] = useState(defaultInput);
+const [outputFormat, setOutputFormat] = useState(defaultOutput);
+
   const [downloadUrl, setDownloadUrl] = useState("");
   const messageRef = useRef(null);
   const navigate = useNavigate();
