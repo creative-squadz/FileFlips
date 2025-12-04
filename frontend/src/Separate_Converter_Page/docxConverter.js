@@ -5,8 +5,14 @@ export default function DOCXconverter() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate("/");   // ← NO replace, NO logout, SAFE redirect
+    // redirect only if NOT already on home 
+    if (window.location.pathname !== "/") {
+      requestAnimationFrame(() => {
+        navigate("/");
+      });
+    }
   }, [navigate]);
 
   return null;
 }
+
