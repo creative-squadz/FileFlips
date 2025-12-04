@@ -1,16 +1,9 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 
-export default function DOCXconverter() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      navigate("/home", { state: { input: "pdf", output: "docx" } });
-    }, 0); // Thoda delay ensures router ready
-
-    return () => clearTimeout(timeout);
-  }, [navigate]);
-
-  return null;
+export default function docxConverter() {
+  return (
+    <section className="flex w-screen h-screen items-center justify-center">
+      <h1>Coming Soon</h1>
+    </section>
+  );
 }
