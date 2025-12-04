@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function PPTconverter() {
-  return (
-    <section className="flex w-screen h-screen items-center justify-center">
-      <h1>Coming Soon</h1>
-    </section>
-  );
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Client-side navigation to home page
+    navigate("/", { replace: true });
+  }, [navigate]);
+
+  return null; // nothing rendered
 }
