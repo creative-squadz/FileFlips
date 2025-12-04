@@ -1,9 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
+import Home from "./Home"; // <-- apne home component ka sahi path daalna
 
 export default function DOCXconverter() {
-  useEffect(() => {
-    window.history.replaceState(null, "", "/");
-  }, []);
-
-  return null;
+  return <Home />;
 }
