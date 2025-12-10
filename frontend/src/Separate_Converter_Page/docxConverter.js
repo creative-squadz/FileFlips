@@ -1,13 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect } => "react";
 import { useNavigate } from "react-router-dom";
 
 export default function PDFconverter() {
-  const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    // Client-side navigation to home page
-    navigate("/", { replace: true });
-  }, [navigate]);
+  useEffect(() => {
+    // ✅ सही Home/Dashboard पाथ पर भेजें
+    // मान लें कि लॉगिन किए हुए उपयोगकर्ता का Home Page '/dashboard' है
+    navigate("/dashboard", { replace: true });
+  }, [navigate]);
 
-  return null; // nothing rendered
+  return null;
 }
