@@ -172,6 +172,51 @@ const handleURLUpload = async () => {
   });
 };
 
+const pickFromOneDrive = () => {
+  if (!window.OneDrive) {
+    alert("OneDrive SDK not loaded yet!");
+    return;
+  }
+
+  const odOptions = {
+    clientId: "YOUR_ONEDRIVE_CLIENT_ID",  
+    action: "download",
+    multiSelect: false,
+    advanced: {
+      filter: "folder,files"
+    },
+    success: async (files) => {
+      try {
+        const file = files.value[0]; 
+        const downloadUrl = file["@microsoft.graph.downloadUrl"];
+
+        const response = await fetch(downloadUrl);
+        const blob = await response.blob();
+
+        const finalFile = new File([blob], file.name, { type: blob.type });
+
+        setFile([finalFile]);
+        setDownloadUrl("");
+
+        messageRef.current.style.color = "green";
+        messageRef.current.textContent = "OneDrive file added!";
+      } catch (err) {
+        console.error(err);
+        messageRef.current.style.color = "red";
+        messageRef.current.textContent = "Failed to load OneDrive file!";
+      }
+    },
+    cancel: () => {
+      console.log("User canceled OneDrive picker");
+    },
+    error: (err) => {
+      console.error(err);
+      alert("OneDrive Error: " + err);
+    }
+  };
+
+  window.OneDrive.open(odOptions);
+};
 
 
 const pickerCallback = async (data) => {
@@ -405,12 +450,13 @@ const response = await fetch(url, {
       <p onClick={pickFromDropbox} className="p-2 hover:bg-gray-100 cursor-pointer">
         📦 From Dropbox
        </p>
+      <p onClick={pickFromOneDrive} className="p-2 hover:bg-gray-100 cursor-pointer">  
+        ☁️ From OneDrive
+       </p>
 
 
        
-       <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
-         ☁️ From OneDrive
-       </p>
+       
      </div>
    )}
  </div>
