@@ -138,16 +138,40 @@ const handleURLUpload = async () => {
   });
 };
 
-  const pickFromDropbox = () => {
+ const pickFromDropbox = () => {
+  if (!window.Dropbox) {
+    alert("Dropbox SDK not loaded yet!");
+    return;
+  }
+
   window.Dropbox.choose({
-    success: function (files) {
-      console.log("Picked file:", files[0]);
-      alert("Selected: " + files[0].name);
+    success: (files) => {
+      const dropboxFile = files[0];
+
+      // Convert Dropbox file URL to Blob
+      fetch(dropboxFile.link)
+        .then((res) => res.blob())
+        .then((blob) => {
+          const fileName = dropboxFile.name;
+          const finalFile = new File([blob], fileName);
+
+          setFile([finalFile]);
+          setDownloadUrl("");
+
+          messageRef.current.style.color = "green";
+          messageRef.current.textContent = "Dropbox file added!";
+        })
+        .catch(() => {
+          messageRef.current.style.color = "red";
+          messageRef.current.textContent = "Failed to load Dropbox File!";
+        });
     },
+
     linkType: "direct",
     multiselect: false,
   });
 };
+
 
 
 const pickerCallback = async (data) => {
