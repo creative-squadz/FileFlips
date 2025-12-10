@@ -47,6 +47,18 @@ const SCOPE = "https://www.googleapis.com/auth/drive.readonly";
 const [gapiLoaded, setGapiLoaded] = useState(false);
 const [pickerLoaded, setPickerLoaded] = useState(false);
 
+// Load OneDrive SDK (React Safe)
+useEffect(() => {
+  if (document.getElementById("onedrive-js")) return;
+
+  const script = document.createElement("script");
+  script.src = "https://js.live.net/v7.2/OneDrive.js";
+  script.id = "onedrive-js";
+  script.onload = () => console.log("OneDrive Loaded ✔");
+  document.body.appendChild(script);
+}, []);
+
+  
 useEffect(() => {
   window.gapi.load("client:auth2", () => {
     window.gapi.client
@@ -179,7 +191,7 @@ const pickFromOneDrive = () => {
   }
 
   const odOptions = {
-    clientId: "YOUR_ONEDRIVE_CLIENT_ID",  
+    clientId: "000000004C1Axxxxxxx",  
     action: "download",
     multiSelect: false,
     advanced: {
