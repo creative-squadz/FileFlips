@@ -138,6 +138,18 @@ const handleURLUpload = async () => {
   });
 };
 
+  const pickFromDropbox = () => {
+  window.Dropbox.choose({
+    success: function (files) {
+      console.log("Picked file:", files[0]);
+      alert("Selected: " + files[0].name);
+    },
+    linkType: "direct",
+    multiselect: false,
+  });
+};
+
+
 const pickerCallback = async (data) => {
   if (data.action === window.google.picker.Action.PICKED) {
     const fileId = data.docs[0].id;
@@ -366,11 +378,12 @@ const response = await fetch(url, {
   🔄 From Google Drive
 </p>
 
-
-
-       <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
-         📦 From Dropbox
+      <p onClick={pickFromDropbox} className="p-2 hover:bg-gray-100 cursor-pointer">
+        📦 From Dropbox
        </p>
+
+
+       
        <p onClick={() => alert("This feature will be integrated in future")} className="p-2 hover:bg-gray-100 cursor-pointer">
          ☁️ From OneDrive
        </p>
