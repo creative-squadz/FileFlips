@@ -483,15 +483,7 @@ const response = await fetch(url, {
  {file.length > 0 && (
    <p className="text-white font-bold">{file[0].name}</p>
  )}
-                
-                
-                
-                
-                
-                
-                
-                
-                <button
+                  <button
                   onClick={(e) => handleSubmit(e)}
                   className={`${
                     downloadUrl.length >= 2 ? "hidden" : "inline-block"
