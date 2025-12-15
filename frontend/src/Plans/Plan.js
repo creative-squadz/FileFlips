@@ -12,18 +12,6 @@ export default function Plan() {
   const [choosePlan, setChoosePlan] = useState({});
   const [showCart, setShowCart] = useState(false);
   const [Address, setAddress] = useState([
-    {
-      street: "64, Rajawat Building, new Dewas Road",
-      city: "Indore",
-      state: "Madhya Pradesh",
-      pin: "452003",
-    },
-    {
-      street: "89AB, RK Complex, near hanuman mandir",
-      city: "Munirka, New Delhi",
-      state: "Delhi",
-      pin: "110067",
-    },
   ]);
 
   const [selectedAddress, setSelectedAddress] = useState({
