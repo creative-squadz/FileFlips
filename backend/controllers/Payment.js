@@ -19,8 +19,8 @@ const createOrder = async (req, res) => {
     }
 
     const options = {
-      amount: parseInt(amount) * 100,
-      currency: "INR",
+      amount: Math.round(parseFloat(amount) * 100), // USD → cents
+      currency: "USD",
     };
     const order = await instance.orders.create(options);
     if (!order) {
