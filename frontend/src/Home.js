@@ -356,28 +356,23 @@ const response = await fetch(url, {
       <h1 className="text-4xl">Online File Converter</h1>
       <p className="text-gray-600 text-xl">Select File to convert</p>
       {/* upload section */}
-      <article className="p-8 w-full md:w-[75%] lg:w-1/2 rounded-md bg-secondary1">
-  <article className="p-4 rounded-md flex flex-col items-center gap-4 bg-secondary2">
-    {limitExceeded ? (
-      <article className="p-4 min-h-[20vh] rounded-md flex flex-col items-center justify-center gap-4 bg-secondary2 grow">
-        <strong className="text-red-800 text-2xl animate-pulse font-georgia text-center">
-          You have exceeded your free trial!
-        </strong>
-
-        {/* ✅ NEW MESSAGE ADDED */}
+     <article className="p-8 w-full md:w-[75%] lg:w-1/2 rounded-md bg-secondary1">
+        <article className="p-4 rounded-md flex flex-col items-center gap-4 bg-secondary2">
+          {limitExceeded ? (
+            <article className="p-4 min-h-[20vh] rounded-md flex flex-col items-center justify-center gap-4 bg-secondary2 grow">
+              <strong className="text-red-800 text-2xl animate-pulse font-georgia">
+                You have excedded your free trial !
+              </strong>
+              {/* ✅ NEW MESSAGE ADDED */}
         <p className="text-lg text-gray-800 text-center font-semibold">
           You need to buy our membership for converting files further
         </p>
-
-        <Link to={params.email ? "plans" : "/signin"}>
-          <button className="border-2 border-secondary1 rounded-md py-2 px-4 font-bold focus:shadow-[0.1rem_0.1rem_2rem_0.5rem_green_inset] bg-primary text-white">
-            Choose Plan
-          </button>
-        </Link>
-      </article>
-    ) : null}
-  </article>
-</article>
+              <Link to={params.email ? "plans" : "/signin"}>
+                <button className="border-2 border-secondary1 rounded-md py-2 px-4 font-bold focus:shadow-[0.1rem_0.1rem_2rem_0.5rem_green_inset] bg-primary text-white">
+                  Choose Plan
+                </button>
+              </Link>
+            </article>
 
           ) : (
             <article
