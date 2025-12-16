@@ -363,14 +363,15 @@ const response = await fetch(url, {
               <strong className="text-red-800 text-2xl animate-pulse font-georgia">
                 You have excedded your free trial !
               </strong>
-              {/* ✅ NEW MESSAGE ADDED */}
-        <p className="text-lg text-gray-800 text-center font-semibold">
-          You need to buy our membership for converting files further
-        </p>
+         
               <Link to={params.email ? "plans" : "/signin"}>
                 <button className="border-2 border-secondary1 rounded-md py-2 px-4 font-bold focus:shadow-[0.1rem_0.1rem_2rem_0.5rem_green_inset] bg-primary text-white">
                   Choose Plan
                 </button>
+            {/* ✅ NEW MESSAGE ADDED */}
+        <p className="text-lg text-red-800 text-center font-semibold">
+          You need to buy our membership for converting files further
+        </p>
               </Link>
             </article>
 
