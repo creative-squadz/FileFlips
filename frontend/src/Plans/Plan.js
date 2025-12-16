@@ -23,7 +23,7 @@ export default function Plan() {
     e.currentTarget?.childNodes[1].classList.remove("hidden");
     try {
       //get key
-      const getKeyUrl = ${process.env.REACT_APP_BACKEND_HOST}/getKey;
+      const getKeyUrl = `${process.env.REACT_APP_BACKEND_HOST}/getKey`;
       const KeyResponse = await fetch(getKeyUrl, {
         method: "GET",
         headers: { "content-type": "application/json" },
@@ -42,7 +42,7 @@ export default function Plan() {
       errorRef.current.textContent = KeyData.message;
 
       //get Plan details
-      const getPlanDetailsUrl = ${process.env.REACT_APP_BACKEND_HOST}/get_unique_plan;
+      const getPlanDetailsUrl = `${process.env.REACT_APP_BACKEND_HOST}/get_unique_plan`;
       const PlanDetailsResponse = await fetch(getPlanDetailsUrl, {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -62,7 +62,7 @@ export default function Plan() {
       errorRef.current.textContent = PlanDetailsData.message;
 
       //create Order
-      const createOrderUrl = ${process.env.REACT_APP_BACKEND_HOST}/createOrder;
+      const createOrderUrl = `${process.env.REACT_APP_BACKEND_HOST}/createOrder`;
       const createOrderResponse = await fetch(createOrderUrl, {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -94,7 +94,7 @@ export default function Plan() {
         handler: async function (response) {
           try {
             const verifyResponse = await fetch(
-              ${process.env.REACT_APP_BACKEND_HOST}/verify_payment,
+              `${process.env.REACT_APP_BACKEND_HOST}/verify_payment`,
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -141,7 +141,7 @@ export default function Plan() {
                       {
                         id: 1,
                         name: PlanDetailsData.plans.name,
-                        description: ${PlanDetailsData.plans.name} : ${PlanDetailsData.plans.description},
+                        description: `${PlanDetailsData.plans.name} : ${PlanDetailsData.plans.description}`,
                         quantity: 1,
                         price: PlanDetailsData.plans.price,
                       },
@@ -189,7 +189,7 @@ export default function Plan() {
         prefill: {
           name: KeyData.user.name, // Optional: Prefill user name
           email: KeyData.user.email, // Optional: Prefill user email
-          contact: KeyData.user.contact[0], // *Mandatory for prefilling mobile number*
+          contact: KeyData.user.contact[0], // **Mandatory for prefilling mobile number**
         },
         theme: {
           color: "#3399cc",
@@ -226,7 +226,7 @@ export default function Plan() {
           <h1 className="flex basis-full text-xl">Trial Plan</h1>
           {plans.trial.map((item, index) => (
             <article
-              key={plan/trial/${index}}
+              key={`plan/trial/${index}`}
               className="border-2 py-4 px-12 rounded-lg flex flex-col gap-2 shadow-[0.1rem_0.1rem_1rem_0.1rem_gray_inset] justify-between md:w-[45%] lg:w-[30%]"
             >
               <div className="flex justify-between items-center text-xl">
@@ -254,7 +254,7 @@ export default function Plan() {
                 <strong>Formats : </strong>
                 <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
                   {JSON.parse(item.formats).map((item, index) => (
-                    <li key={plan/trial/formats/${index}}>{item}</li>
+                    <li key={`plan/trial/formats/${index}`}>{item}</li>
                   ))}
                 </ol>
               </div>
@@ -262,7 +262,7 @@ export default function Plan() {
                 <strong>Advantages : </strong>
                 <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
                   {JSON.parse(item.advantages).map((item, index) => (
-                    <li key={plan/trial/advantages/${index}}>{item}</li>
+                    <li key={`plan/trial/advantages/${index}`}>{item}</li>
                   ))}
                 </ol>
               </div>
@@ -297,7 +297,7 @@ export default function Plan() {
         <h1 className="flex basis-full text-xl">Monthly Plan</h1>
         {plans.monthly.map((item, index) => (
           <article
-            key={plan/monthly/${index}}
+            key={`plan/monthly/${index}`}
             className="border-2 p-4 rounded-lg flex flex-col gap-2 grow shadow-[0.1rem_0.1rem_1rem_0.1rem_gray_inset] justify-between md:w-[45%] lg:w-[30%]"
           >
             <div className="flex justify-between items-center text-xl">
@@ -325,7 +325,7 @@ export default function Plan() {
               <strong>Formats : </strong>
               <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
                 {JSON.parse(item.formats).map((item, index) => (
-                  <li key={plan/monthly/formats/${index}}>{item}</li>
+                  <li key={`plan/monthly/formats/${index}`}>{item}</li>
                 ))}
               </ol>
             </div>
@@ -333,7 +333,7 @@ export default function Plan() {
               <strong>Advantages : </strong>
               <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
                 {JSON.parse(item.advantages).map((item, index) => (
-                  <li key={plan/monthly/advantages/${index}}>{item}</li>
+                  <li key={`plan/monthly/advantages/${index}`}>{item}</li>
                 ))}
               </ol>
             </div>
@@ -368,7 +368,7 @@ export default function Plan() {
         <h1 className="flex basis-full text-xl">Yearly Plan</h1>
         {plans.yearly.map((item, index) => (
           <article
-            key={plan/yearly/${index}}
+            key={`plan/yearly/${index}`}
             className="border-2 p-4 rounded-lg flex flex-col gap-2 grow shadow-[0.1rem_0.1rem_1rem_0.1rem_gray_inset] justify-between md:w-[45%] lg:w-[30%]"
           >
             <div className="flex justify-between items-center text-xl">
@@ -396,7 +396,7 @@ export default function Plan() {
               <strong>Formats : </strong>
               <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
                 {JSON.parse(item.formats).map((item, index) => (
-                  <li key={plan/yearly/formats/${index}}>{item}</li>
+                  <li key={`plan/yearly/formats/${index}`}>{item}</li>
                 ))}
               </ol>
             </div>
@@ -404,7 +404,7 @@ export default function Plan() {
               <strong>Advantages : </strong>
               <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
                 {JSON.parse(item.advantages).map((item, index) => (
-                  <li key={plan/yearly/advantages/${index}}>{item}</li>
+                  <li key={`plan/yearly/advantages/${index}`}>{item}</li>
                 ))}
               </ol>
             </div>
@@ -439,7 +439,7 @@ export default function Plan() {
         <h1 className="flex basis-full text-xl">Unlimited Plan</h1>
         {plans.unlimited.map((item, index) => (
           <article
-            key={plan/unlimited/${index}}
+            key={`plan/unlimited/${index}`}
             className={`border-2 p-4 rounded-lg flex flex-col ${
               plans.unlimited.length > 1 && "grow"
             } gap-2 shadow-[0.1rem_0.1rem_1rem_0.1rem_gray_inset] justify-between md:w-[45%] lg:w-[30%]`}
@@ -450,7 +450,7 @@ export default function Plan() {
             </div>
             <p className="break-words">{`${
               plans.unlimited.length > 1
-                ? ${item.description.slice(0, 50)}...
+                ? `${item.description.slice(0, 50)}...`
                 : item.description
             }`}</p>
             <span className="flex gap-2">
@@ -473,7 +473,7 @@ export default function Plan() {
               <strong>Formats : </strong>
               <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
                 {JSON.parse(item.formats).map((item, index) => (
-                  <li key={plan/unlimited/formats/${index}}>{item}</li>
+                  <li key={`plan/unlimited/formats/${index}`}>{item}</li>
                 ))}
               </ol>
             </div>
@@ -481,7 +481,7 @@ export default function Plan() {
               <strong>Advantages : </strong>
               <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
                 {JSON.parse(item.advantages).map((item, index) => (
-                  <li key={plan/unlimited/advantages/${index}}>{item}</li>
+                  <li key={`plan/unlimited/advantages/${index}`}>{item}</li>
                 ))}
               </ol>
             </div>
@@ -520,11 +520,11 @@ export default function Plan() {
             {Address.length > 0 ? (
               <article className="flex flex-col gap-4">
                 {Address.map((item, index) => (
-                  <article key={address/${index}} className="flex gap-4">
+                  <article key={`address/${index}`} className="flex gap-4">
                     <input
                       type="radio"
                       name="address"
-                      id={address/${index}}
+                      id={`address/${index}`}
                       onChange={() =>
                         setSelectedAddress(() => ({
                           status: false,
@@ -532,7 +532,7 @@ export default function Plan() {
                         }))
                       }
                     />
-                    <label htmlFor={address/${index}}>
+                    <label htmlFor={`address/${index}`}>
                       {item.street +
                         " ," +
                         item.city +
@@ -727,4 +727,4 @@ export default function Plan() {
       )}
     </section>
   );
-}
+}    
