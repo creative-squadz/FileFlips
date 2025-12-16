@@ -369,7 +369,8 @@ const response = await fetch(url, {
                   Choose Plan
                 </button>
             {/* ✅ NEW MESSAGE ADDED */}
-        <p className="text-lg text-red-800 text-center font-semibold">
+         
+        <p className="text-lg text-red-800 text-center font-semibold mt-8">
           You need to buy our membership for converting files further
         </p>
               </Link>
