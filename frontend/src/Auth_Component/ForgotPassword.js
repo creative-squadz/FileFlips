@@ -1,1 +1,10 @@
-export default function ForgotPassword() { return ( <div>ForgotPassword</div> ) }
+"use client";
+
+export default function ForgotPassword() {
+  return (
+    <div>
+      Forgot Password
+    </div>
+  );
+}
+
