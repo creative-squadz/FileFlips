@@ -59,10 +59,10 @@ export default function Nav() {
       ],
     },
     {
-     // id: 2,
-      //name: "File Formats",
-     // path: "file_formats",
-     // icon: FaFileWaveform,
+      id: 2,
+      name: "Membership",
+     path: "membership",
+     icon: FaFileWaveform,
     },
     {
     //  id: 3,
