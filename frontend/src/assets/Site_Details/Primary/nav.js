@@ -10,7 +10,7 @@ import { LuFiles } from "react-icons/lu";
 import { IoIosLogIn } from "react-icons/io";
 import { MdAppRegistration } from "react-icons/md";
 import { IoIosLogOut } from "react-icons/io";
-import { LuReceipt } from "react-icons/lu";
+//import { LuReceipt } from "react-icons/lu";
 
 export default function Nav() {
   const list = [
@@ -75,7 +75,7 @@ const menuItems = [
   {
     id: 6,
     name: "Membership",
-    icon:LuReceipt,
+    icon:LuFiles,
     children: [
       {
         id: "m1",
