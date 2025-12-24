@@ -71,12 +71,12 @@ export default function Nav() {
       //icon: LuFiles,
     },
 
-const menuItems = [
+const list = [
   {
     id: 6,
     name: "Membership",
    
-    children: [
+    submenu: [
       {
         id: "m1",
         name: "My Plan",
