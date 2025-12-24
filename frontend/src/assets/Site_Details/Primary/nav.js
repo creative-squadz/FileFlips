@@ -10,6 +10,8 @@ import { LuFiles } from "react-icons/lu";
 import { IoIosLogIn } from "react-icons/io";
 import { MdAppRegistration } from "react-icons/md";
 import { IoIosLogOut } from "react-icons/io";
+import { LuReceipt } from "react-icons/lu";
+
 export default function Nav() {
   const list = [
     {
@@ -57,17 +59,38 @@ export default function Nav() {
       ],
     },
     {
-      id: 2,
-      name: "File Formats",
-      path: "file_formats",
-      icon: FaFileWaveform,
+     // id: 2,
+      //name: "File Formats",
+     // path: "file_formats",
+     // icon: FaFileWaveform,
     },
     {
-      id: 3,
-      name: "My Files",
-      path: "my_files",
-      icon: LuFiles,
+    //  id: 3,
+    //  name: "My Files",
+     // path: "my_files",
+      //icon: LuFiles,
     },
+
+const menuItems = [
+  {
+    id: 6,
+    name: "Membership",
+    icon:LuReceipt,
+    children: [
+      {
+        id: "m1",
+        name: "My Plan",
+        path: "/membership",
+      },
+      {
+        id: "m2",
+        name: "Invoice",
+        path: "/invoice",
+      },
+    ],
+  },
+];
+
     {
       id: 4,
       name: "Sign In",
