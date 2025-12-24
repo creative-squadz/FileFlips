@@ -71,28 +71,7 @@ export default function Nav() {
      // path: "my_files",
       //icon: LuFiles,
     },
-     {
-      id: 6,
-      name: "Membership",
-      path: "/membership",
-      icon: LuFiles,
-      submenu: [
-        {
-          id: 1,
-          name: "My Plan",
-          path: "/home/plans",
-          icon: LuFiles,
-        },
-        {
-          id: 2,
-          name: "Invoice",
-          path: "/home/plans/templates/template1",
-          icon: LuFiles,
-        },
-      ],
-    }, 
-
-
+     
 
     {
       id: 4,
@@ -113,5 +92,29 @@ export default function Nav() {
       icon: IoIosLogOut,
     },
   ];
+    const list = [ 
+      {
+      id: 6,
+      name: "Membership",
+      path: "/membership",
+      icon: LuFiles,
+      submenu: [
+        {
+          id: 1,
+          name: "My Plan",
+          path: "/home/plans",
+          icon: LuFiles,
+        },
+        {
+          id: 2,
+          name: "Invoice",
+          path: "/home/plans/templates/template1",
+          icon: LuFiles,
+        },
+      ],
+    }, 
+      ];
+
+
   return list;
 } 
