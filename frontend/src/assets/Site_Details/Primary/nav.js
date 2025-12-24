@@ -58,11 +58,26 @@ export default function Nav() {
         },
       ],
     },
+   const list = [
     {
       id: 2,
       name: "Membership",
      path: "membership",
      icon: FaFileWaveform,
+    submenu: [
+        {
+          id: 1,
+          name: "My Plan",
+          path: "/membership",
+          
+        },
+        {
+          id: 2,
+          name: "Invoice",
+          path: "/Template1",,
+        
+        },
+       ],
     },
     {
     //  id: 3,
