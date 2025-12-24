@@ -1,7 +1,6 @@
 import { SiConvertio } from "react-icons/si";
 import { FaFilePdf } from "react-icons/fa";
 import { PiArrowsMergeBold } from "react-icons/pi";
-import { FaFileWaveform } from "react-icons/fa6";
 import { MdEditDocument } from "react-icons/md";
 import { FaFileWord } from "react-icons/fa";
 import { FaFileExcel } from "react-icons/fa6";
@@ -10,7 +9,6 @@ import { LuFiles } from "react-icons/lu";
 import { IoIosLogIn } from "react-icons/io";
 import { MdAppRegistration } from "react-icons/md";
 import { IoIosLogOut } from "react-icons/io";
-//import { LuReceipt } from "react-icons/lu";
 
 export default function Nav() {
   const list = [
@@ -58,43 +56,48 @@ export default function Nav() {
         },
       ],
     },
-  
+
+    // 🔥 Membership Menu
     {
-      id: 2,
+      id: 6,
       name: "Membership",
-     path: "membership",
-     icon: FaFileWaveform,
-   
-    
+      path: "/membership",
+      icon: LuFiles,
+      submenu: [
+        {
+          id: 1,
+          name: "My Plan",
+          path: "/membership/plan",
+          icon: LuFiles,
+        },
+        {
+          id: 2,
+          name: "Invoice",
+          path: "/membership/invoice",
+          icon: LuFiles,
+        },
+      ],
     },
-    {
-    //  id: 3,
-    //  name: "My Files",
-     // path: "my_files",
-      //icon: LuFiles,
-    },
-   
-
-
 
     {
-      id: 4,
+      id: 7,
       name: "Sign In",
       path: "/signIn",
       icon: IoIosLogIn,
     },
     {
-      id: 5,
+      id: 8,
       name: "Sign Up",
       path: "/signUp",
       icon: MdAppRegistration,
     },
     {
-      id: 5,
+      id: 9,
       name: "Sign Out",
       path: "/signout",
       icon: IoIosLogOut,
     },
   ];
+
   return list;
 }
