@@ -75,7 +75,7 @@ const menuItems = [
   {
     id: 6,
     name: "Membership",
-    icon:LuFiles,
+   
     children: [
       {
         id: "m1",
