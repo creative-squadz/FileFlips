@@ -7,10 +7,19 @@ export default function SignUp() {
     middle_name: "",
     last_name: "",
     gender: "",
+    country_code: "+91",
     mobile_no: "",
     email: "",
     password: "",
   });
+  const countryCodes = [
+  { code: "+91", country: "India" },
+  { code: "+1", country: "USA" },
+  { code: "+44", country: "UK" },
+  { code: "+61", country: "Australia" },
+  { code: "+971", country: "UAE" },
+];
+
   const [cnfPassword, setCNFPassword] = useState("");
   const errorRef = useRef(null);
   const navigate = useNavigate();
@@ -260,30 +269,51 @@ export default function SignUp() {
                 <option value="female">Female</option>
               </select>
             </article>
-            <article className="whitespace-nowrap w-full flex flex-col items-center grow">
-              <label
-                htmlFor="mobile_no"
-                id="mobile_no_Label"
-                className="bg-white ml-4 z-[2] w-fit self-start after:content-['*'] after:text-red-600"
-              >
-                Mobile No.
-              </label>
-              <input
-                type="mobile_no"
-                name="mobile_no"
-                id="mobile_no"
-                value={userCredentials.mobile_no}
-                className="border-[1px] border-black rounded-md p-2 -mt-3 w-full"
-                placeholder="7564044692"
-                aria-required
-                onChange={(e) =>
-                  setUserCredentials((props) => ({
-                    ...props,
-                    mobile_no: e.target.value,
-                  }))
-                }
-              />
-            </article>
+            <article className="whitespace-nowrap w-full flex flex-col grow">
+  <label
+    htmlFor="mobile_no"
+    className="bg-white ml-4 z-[2] w-fit after:content-['*'] after:text-red-600"
+  >
+    Mobile No.
+  </label>
+
+  <div className="flex -mt-3 w-full gap-2">
+    {/* Country Code Dropdown */}
+    <select
+      value={userCredentials.country_code}
+      className="border border-black rounded-md p-2 bg-white"
+      onChange={(e) =>
+        setUserCredentials((prev) => ({
+          ...prev,
+          country_code: e.target.value,
+        }))
+      }
+    >
+      {countryCodes.map((item) => (
+        <option key={item.code} value={item.code}>
+          {item.country} ({item.code})
+        </option>
+      ))}
+    </select>
+
+    {/* Mobile Number Input */}
+    <input
+      type="tel"
+      name="mobile_no"
+      id="mobile_no"
+      value={userCredentials.mobile_no}
+      className="border border-black rounded-md p-2 w-full"
+      placeholder="7564044692"
+      onChange={(e) =>
+        setUserCredentials((prev) => ({
+          ...prev,
+          mobile_no: e.target.value,
+        }))
+      }
+    />
+  </div>
+</article>
+
           </article>
           {/* email & password section */}
           <article className="whitespace-nowrap w-full flex flex-col items-center xsm:flex-row xsm:flex-nowrap xsm:justify-between xsm:items-center gap-4">
