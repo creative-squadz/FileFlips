@@ -438,7 +438,7 @@ export default function SignUp() {
     {/* Country Code Dropdown */}
     <select
       value={userCredentials.country_code}
-      className="border border-black rounded-md p-2 bg-white"
+      className="border border-black rounded-md p-2 bg-white w-[90px]"
       onChange={(e) =>
         setUserCredentials((prev) => ({
           ...prev,
