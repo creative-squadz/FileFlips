@@ -448,7 +448,7 @@ export default function SignUp() {
     >
       {countryCodes.map((item) => (
         <option key={item.code} value={item.code}>
-          {item.country} ({item.code})
+           ({item.code})
         </option>
       ))}
     </select>
