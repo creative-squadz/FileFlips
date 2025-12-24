@@ -58,14 +58,14 @@ export default function Nav() {
         },
       ],
     },
-   const list = [
+  
     {
       id: 2,
       name: "Membership",
      path: "membership",
      icon: FaFileWaveform,
    
-     ],
+    
     },
     {
     //  id: 3,
