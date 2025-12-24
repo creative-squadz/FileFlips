@@ -70,6 +70,11 @@ export default function Nav() {
      // path: "my_files",
       //icon: LuFiles,
     },
+    {
+      id:2,
+      name:"Membership"
+      path:"membership"
+    }
 
 
 
