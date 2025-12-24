@@ -71,25 +71,7 @@ export default function Nav() {
       //icon: LuFiles,
     },
 
-const list = [
-  {
-    id: 6,
-    name: "Membership",
-   
-    submenu: [
-      {
-        id: "m1",
-        name: "My Plan",
-        path: "/membership",
-      },
-      {
-        id: "m2",
-        name: "Invoice",
-        path: "/invoice",
-      },
-    ],
-  },
-];
+
 
     {
       id: 4,
