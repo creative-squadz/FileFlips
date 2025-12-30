@@ -39,7 +39,7 @@ export default function Nav() {
         {
           id: 2,
           name: "Invoice",
-          path: "/:email/invoice",
+          path: "/:email/invoice",  
           icon: LuFiles,
         },
       ],
@@ -50,3 +50,4 @@ export default function Nav() {
     { id: 7, name: "Sign Out", path: "/signout", icon: IoIosLogOut },
   ];
 }
+
