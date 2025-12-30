@@ -4,6 +4,9 @@ import Header from "./Repeated_Component/Header";
 import Home from "./Home";
 import { useParams } from "react-router-dom";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Template1 from "./pages/Template1"; // Invoice template
+
 function App() {
   const [resolution, setResolution] = useState({
     height: window.innerHeight,
@@ -85,6 +88,8 @@ function App() {
         setLimitExceeded={setLimitExceeded}
         setTempUser={setTempUser}
       />
+          {/* Invoice route */}
+        <Route path="/:email/invoice" element={<Template1 />} />
     </>
   );
 }
