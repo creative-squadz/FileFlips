@@ -88,8 +88,7 @@ function App() {
         setLimitExceeded={setLimitExceeded}
         setTempUser={setTempUser}
       />
-          {/* Invoice route */}
-        <Route path="/:email/invoice" element={<Template1 />} />
+         
     </>
   );
 }
