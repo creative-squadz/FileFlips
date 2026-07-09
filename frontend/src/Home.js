@@ -59,6 +59,8 @@ useEffect(() => {
 
   
 useEffect(() => {
+  if (!GOOGLE_CLIENT_ID || !GOOGLE_API_KEY) return;
+
   window.gapi.load("client:auth2", () => {
     window.gapi.client
       .init({
