@@ -11,7 +11,7 @@ export default function Template1() {
   const location = useLocation(); 
   const params = useParams();
   const navigate = useNavigate();
-  const [taxRate, setTaxRate] = useState(0);
+  const [taxRate] = useState(0);
   const [validTill, setValidTill] = useState(30);
   const [userInfo, setUserInfo] = useState(
     location.state
@@ -85,7 +85,7 @@ export default function Template1() {
     if (location.state.user) {
       setValidTill(location.state.user.expires);
     }
-  }, []);
+  }, [location.state.user]);
   return showForm ? (
     <section className="flex flex-col w-screen h-full p-4 gap-4">
       {/* bill to */}

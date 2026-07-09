@@ -75,25 +75,25 @@ useEffect(() => {
   window.gapi.load("picker", () => {
     setPickerLoaded(true);
   });
-}, []);
+}, [GOOGLE_API_KEY, GOOGLE_CLIENT_ID, SCOPE]);
 
   
 
   
-  const fromTo = (index) => {
-    const temp = new Set(
-      JSON.parse(tempUser.formatAllowed)
-        .map((item) => item.split("->"))
-        .map((inthere) => inthere[index])
-    );
-    return [...temp];
-  };
   useEffect(() => {
+    const fromTo = (index) => {
+      const temp = new Set(
+        JSON.parse(tempUser.formatAllowed)
+          .map((item) => item.split("->"))
+          .map((inthere) => inthere[index])
+      );
+      return [...temp];
+    };
     setAvailableFormats({
       from: fromTo(0),
       to: fromTo(1),
     });
-  }, []);
+  }, [tempUser.formatAllowed]);
 
   const handleFileChange = (e) => {
     setFile([]);

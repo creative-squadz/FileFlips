@@ -11,7 +11,7 @@ export default function Plan() {
   const plans = Plans();
   const [choosePlan, setChoosePlan] = useState({});
   const [showCart, setShowCart] = useState(false);
-  const [Address, setAddress] = useState([
+  const [Address] = useState([
   ]);
 
   const [selectedAddress, setSelectedAddress] = useState({

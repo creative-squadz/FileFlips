@@ -10,7 +10,7 @@ export default function Header({ size }) {
   const [slidebar, setSlidebar] = useState(false);
   const converterArrowRef = useRef(null);
   const params = useParams();
-  const [last3, setLast3] = useState(
+  const [last3] = useState(
     params.email ? { x: -1, y: undefined } : { x: -3, y: -1 }
   );
   useEffect(() => {
