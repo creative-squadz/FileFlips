@@ -1,0 +1,68 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../prisma/app/generated/prisma/client"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id              Int     @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  first_name      String  @db.VarChar(128)
+  middle_name     String? @db.VarChar(128)
+  last_name       String  @db.VarChar(128)
+  gender          String  @db.VarChar(45)
+  mobile_no       String  @unique(map: "mobile_no_UNIQUE") @db.VarChar(20)
+  email           String  @unique(map: "email_UNIQUE") @db.VarChar(128)
+  password        String  @db.VarChar(512)
+  reference_token String  @unique(map: "reference_token_UNIQUE") @db.VarChar(512)
+}
+
+model GuestUser {
+  id          Int    @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  ip          String @db.VarChar(128)
+  fingerprint String @unique(map: "fingerprint_UNIQUE") @db.VarChar(125)
+  used        Int
+  max         Int
+  maxSize     Int
+  startDate   String @db.VarChar(45)
+}
+
+model PaidUser {
+  id                 Int    @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  email              String @unique(map: "email_UNIQUE") @db.VarChar(128)
+  plan_id            Int
+  used               Int?
+  max                Int
+  maxSize            Int
+  maxBatch           Int
+  start_date         String @db.VarChar(45)
+  end_date           String @db.VarChar(45)
+  conversion_allowed String @db.LongText
+  payment_id         String @unique(map: "razorpay_payment_id_UNIQUE") @db.VarChar(128)
+}
+
+model Plans {
+  id             Int    @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  name           String @unique(map: "name_UNIQUE") @db.VarChar(128)
+  price          Float  @db.Float
+  description    String @db.LongText
+  maxConversions Int
+  maxFileSizeMB  Int
+  batchLimit     Int
+  support        String @db.LongText
+  formats        String @db.LongText
+  advantages     String @db.LongText
+}
+
+model RefundUser {
+  id            Int    @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  email         String @db.VarChar(128)
+  plan_id       Int
+  amount        Int
+  refund_id     String @db.VarChar(128)
+  refund_status String @db.VarChar(512)
+}
