@@ -2,7 +2,7 @@
 
 # dependencies
 node_modules
-prisma
+prisma/app/generated/
 /.pnp
 .pnp.js
 

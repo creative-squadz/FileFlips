@@ -1,5 +1,5 @@
 const cors = require("cors");
-const corsOptions = require("../config/corsOptions");
+const corsOptions = require("../config/cors");
 const { userEntry } = require("../controllers/UserEntry");
 
 module.exports = async (req, res) => {

@@ -19,8 +19,8 @@ const createOrder = async (req, res) => {
     }
 
     const options = {
-      amount: Math.round(parseFloat(amount) * 100), // USD → cents
-      currency: "USD",
+      amount: Math.round(parseFloat(amount) * 100), // INR → paise
+      currency: "INR",
     };
     const order = await instance.orders.create(options);
     if (!order) {
@@ -107,7 +107,7 @@ const verifyPayment = async (req, res) => {
       };
 
       const refund = await instance.payments.refund(
-        razorpay_pament_id,
+        razorpay_payment_id,
         refundRequest
       );
 

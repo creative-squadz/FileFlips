@@ -1,5 +1,5 @@
-import CloudConvert from "cloudconvert";
-export const convertFile = async (req, res) => {
+const CloudConvert = require("cloudconvert");
+const convertFile = async (req, res) => {
   try {
     const cloudConvert = new CloudConvert(
       process.env.CLOUDCONVERT_API_TESTING_KEY
@@ -66,3 +66,4 @@ export const convertFile = async (req, res) => {
       .json({ error: "Internal Server Error", message: err.message });
   }
 };
+module.exports = { convertFile };

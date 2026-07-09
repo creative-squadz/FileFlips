@@ -39,9 +39,8 @@ const [outputFormat, setOutputFormat] = useState(defaultOutput);
  const [showUrlBox, setShowUrlBox] = useState(false);
  const [urlInput, setUrlInput] = useState("");
 
- const GOOGLE_CLIENT_ID = "782728745677-cg4erqt1clgfkh6676gohnu42jnri7o8.apps.googleusercontent.com";
-
-const GOOGLE_API_KEY = "AQ.Ab8RN6Lkj7ExcMxz3LpWEPP-aNI630OEAw_o1-_3UbhesRlOLQ";
+  const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 const SCOPE = "https://www.googleapis.com/auth/drive.readonly";
 //
 const [gapiLoaded, setGapiLoaded] = useState(false);
@@ -191,7 +190,7 @@ const pickFromOneDrive = () => {
   }
 
   const odOptions = {
-    clientId: "000000004C1Axxxxxxx",  
+    clientId: process.env.REACT_APP_ONEDRIVE_CLIENT_ID,  
     action: "download",
     multiSelect: false,
     advanced: {
@@ -318,7 +317,7 @@ const response = await fetch(url, {
         return;
       }
       try {
-        const response = await fetch(
+        const convertResponse = await fetch(
           `${process.env.REACT_APP_BACKEND_HOST}/api/convert`,
           {
             method: "POST",
@@ -326,17 +325,17 @@ const response = await fetch(url, {
           }
         );
 
-        const data = await response.json();
+        const convertData = await convertResponse.json();
 
-        if (response.ok) {
+        if (convertResponse.ok) {
           tempUses();
           messageRef.current.style.color = "#008000";
-          messageRef.current.textContent = data.message;
-          setDownloadUrl(data.fileUrl || "");
+          messageRef.current.textContent = convertData.message;
+          setDownloadUrl(convertData.fileUrl || "");
         } else {
           e.target.style.boxShadow = "0.1rem 0.1rem 2rem 0.5rem red inset";
           messageRef.current.style.color = "red";
-          messageRef.current.textContent = `Upload failed : ${data.message}`;
+          messageRef.current.textContent = `Upload failed : ${convertData.message}`;
         }
       } catch (error) {
         e.target.style.boxShadow = "0.1rem 0.1rem 2rem 0.5rem red inset";
@@ -540,21 +539,17 @@ const response = await fetch(url, {
                   >
                     {JSON.parse(tempUser.formatAllowed)
                       .map((item) => item.split("->"))
-                      .map((item, index) => {
-                        if (
-                          item[0].trim().toLowerCase() ===
-                          inputFormat.toLowerCase()
-                        ) {
-                          return (
-                            <option
-                              key={`to/${index}`}
-                              value={item[1].toLowerCase()}
-                            >
-                              {item[1].toUpperCase()}
-                            </option>
-                          );
-                        }
-                      })}
+                      .filter((item) =>
+                        item[0].trim().toLowerCase() === inputFormat.toLowerCase()
+                      )
+                      .map((item, index) => (
+                        <option
+                          key={`to/${index}`}
+                          value={item[1].toLowerCase()}
+                        >
+                          {item[1].toUpperCase()}
+                        </option>
+                      ))}
                   </select>
                 </div>
               </article>
