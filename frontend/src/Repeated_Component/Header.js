@@ -43,7 +43,7 @@ export default function Header({ size }) {
         placeholder="Search Converters (e.g. PDF to DOCX)"
       />
       <article className="flex gap-4 items-center">
-        {Nav()
+        {Nav(params.email)
           .slice(0, -3)
           .map((item, index) => (
             <div
@@ -51,7 +51,7 @@ export default function Header({ size }) {
               className="relative flex flex-col gap-2"
             >
               <div className="flex items-center gap-2">
-                <Link to={item.path}>{item.name}</Link>
+                <Link to={params.email ? item.path : "/signin"}>{item.name}</Link>
                 {item.submenu && (
                   <FaAngleDown
                     ref={converterArrowRef}
@@ -88,7 +88,7 @@ export default function Header({ size }) {
         <p className="text-white">.</p>
       </div>
       <article className="flex gap-4 items-center">
-        {Nav()
+        {Nav(params.email)
           .slice(last3.x, last3.y)
           .map((item, index) => (
             <Link
@@ -135,7 +135,7 @@ export default function Header({ size }) {
               setSlidebar(false);
             }}
           >
-            {Nav()
+            {Nav(params.email)
               .slice(0, -3)
               .map((item, index) => (
                 <div
@@ -147,7 +147,7 @@ export default function Header({ size }) {
                     className="flex gap-4 items-center"
                   >
                     <item.icon className="text-2xl text-primary" />
-                    <Link to={item.path} className="grow">
+                    <Link to={params.email ? item.path : "/signin"} className="grow">
                       {item.name}
                     </Link>
                     {item.submenu && (
@@ -180,7 +180,7 @@ export default function Header({ size }) {
                   )}
                 </div>
               ))}
-            {Nav()
+            {Nav(params.email)
               .slice(last3.x, last3.y)
               .map((item, index) => (
                 <div
@@ -195,34 +195,7 @@ export default function Header({ size }) {
                     <Link to={item.path} className="grow">
                       {item.name}
                     </Link>
-                    {item.submenu && (
-                      <FaAngleDown
-                        className="cursor-pointer"
-                        ref={converterArrowRef}
-                        onClick={() => {
-                          setShowConverter(!showConverter);
-                        }}
-                      />
-                    )}
                   </div>
-                  {item.submenu && (
-                    <article
-                      className={`${
-                        showConverter ? "flex" : "hidden"
-                      } flex-col gap-4 ml-8`}
-                    >
-                      {item.submenu.map((inthere, index) => (
-                        <Link
-                          to={params.email ? inthere.path : "/signin"}
-                          key={`SlideMenuItem/item/${item.name}/sub/${index}`}
-                          className="flex gap-2 items-center"
-                        >
-                          <inthere.icon className="text-xl text-primary" />
-                          <p className="grow">{inthere.name}</p>
-                        </Link>
-                      ))}
-                    </article>
-                  )}
                 </div>
               ))}
           </article>

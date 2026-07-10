@@ -16,7 +16,7 @@ export default function Home({
   setLimitExceeded,
   setTempUser,
 }) {
-  const category = Nav().filter((item) => item.name === "Converters")[0]
+  const category = Nav(params.email).filter((item) => item.name === "Converters")[0]
     .submenu;
   const [faq, setFAQ] = useState(FAQ());
   const [file, setFile] = useState([]);
