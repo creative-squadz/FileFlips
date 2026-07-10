@@ -83,6 +83,15 @@ useEffect(() => {
 
   
   useEffect(() => {
+    if (location.hash) {
+      const el = document.getElementById(location.hash.replace("#", ""));
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: "smooth" }), 300);
+      }
+    }
+  }, [location]);
+
+  useEffect(() => {
     const fromTo = (index) => {
       const temp = new Set(
         JSON.parse(tempUser.formatAllowed)
