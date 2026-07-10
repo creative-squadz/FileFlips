@@ -1,5 +1,13 @@
-import App from "../App";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function DOCXconverter() {
-  return <App />;
+  const navigate = useNavigate();
+  const { email } = useParams();
+
+  useEffect(() => {
+    navigate(`/${email}/home`, { replace: true, state: { input: "docx", output: "pdf" } });
+  }, [navigate, email]);
+
+  return null;
 }
