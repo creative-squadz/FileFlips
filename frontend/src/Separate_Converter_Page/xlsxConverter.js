@@ -1,13 +1,5 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import App from "../App";
 
 export default function XLSXconverter() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Client-side navigation to home page
-    navigate("/", { replace: true });
-  }, [navigate]);
-
-  return null; // nothing rendered
+  return <App />;
 }
