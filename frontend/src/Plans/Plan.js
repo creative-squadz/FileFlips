@@ -5,24 +5,149 @@ import { MdDelete } from "react-icons/md";
 import { FaArrowAltCircleLeft } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 import { IoMdAdd } from "react-icons/io";
+import { BsCheckLg } from "react-icons/bs";
 import siteInfo from "../assets/Site_Details/Primary/siteInfo";
+
+const categories = [
+  { key: "trial", label: "Trial", popular: false },
+  { key: "monthly", label: "Monthly", popular: true },
+  { key: "yearly", label: "Yearly", popular: false },
+  { key: "unlimited", label: "Unlimited", popular: false },
+];
+
+function PlanCard({ item, choosePlan, setChoosePlan, popular }) {
+  const features = [
+    item.maxConversions === 0
+      ? "Unlimited Conversions"
+      : `${item.maxConversions} Conversions`,
+    item.maxFileSizeMB === 0
+      ? "Unlimited File Size"
+      : `Up to ${item.maxFileSizeMB}MB per file`,
+    item.batchLimit === 0
+      ? "Unlimited Batch"
+      : `Batch: ${item.batchLimit}`,
+    item.support,
+  ];
+
+  let formats = [];
+  let advantages = [];
+  try { formats = JSON.parse(item.formats || "[]"); } catch (e) { formats = []; }
+  try { advantages = JSON.parse(item.advantages || "[]"); } catch (e) { advantages = []; }
+
+  const selected = choosePlan.id === item.id;
+
+  return (
+    <article
+      className={`relative flex flex-col rounded-2xl border transition-all duration-300 p-6 ${
+        selected
+          ? "border-blue-500 shadow-[0_0_0_2px_#3b82f6,_0_8px_30px_rgba(59,130,246,0.15)]"
+          : popular
+          ? "border-blue-200 shadow-[0_4px_20px_rgba(59,130,246,0.08)] hover:shadow-[0_8px_30px_rgba(59,130,246,0.12)]"
+          : "border-gray-200 shadow-sm hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
+      } hover:-translate-y-1`}
+    >
+      {popular && (
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-semibold px-4 py-1 rounded-full">
+          Most Popular
+        </span>
+      )}
+
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <h3 className="text-lg font-bold text-gray-900">{item.name}</h3>
+          <p className="text-sm text-gray-500 mt-1 line-clamp-2">{item.description}</p>
+        </div>
+        <div className="text-right shrink-0 ml-4">
+          {+item.price > 0 ? (
+            <div>
+              <span className="text-3xl font-extrabold text-gray-900">₹{item.price}</span>
+            </div>
+          ) : (
+            <span className="text-3xl font-extrabold text-green-600">Free</span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex-1 space-y-3">
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">What you get</p>
+        <ul className="space-y-2">
+          {features.map((f, i) => (
+            <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+              <BsCheckLg className="text-green-500 mt-0.5 shrink-0" />
+              <span>{f}</span>
+            </li>
+          ))}
+        </ul>
+
+        {formats.length > 0 && (
+          <>
+            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 pt-2">Formats</p>
+            <div className="flex flex-wrap gap-1.5">
+              {formats.map((f, i) => (
+                <span key={i} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-md">{f}</span>
+              ))}
+            </div>
+          </>
+        )}
+
+        {advantages.length > 0 && (
+          <>
+            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 pt-2">Advantages</p>
+            <ul className="space-y-1.5">
+              {advantages.map((a, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                  <span className="text-blue-500 mt-0.5 shrink-0">&#9656;</span>
+                  <span>{a}</span>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2 mt-6 pt-4 border-t border-gray-100">
+        <button
+          disabled={choosePlan.id && !selected}
+          onClick={() => setChoosePlan(item)}
+          className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+            selected
+              ? "bg-blue-600 text-white shadow-[0_2px_10px_rgba(59,130,246,0.3)]"
+              : choosePlan.id
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100"
+          }`}
+        >
+          {selected ? "Selected" : "Select Plan"}
+        </button>
+        {selected && (
+          <button
+            onClick={() => setChoosePlan({})}
+            className="p-2.5 rounded-xl text-red-500 hover:bg-red-50 transition-colors"
+            title="Remove selection"
+          >
+            <MdDelete className="text-xl" />
+          </button>
+        )}
+      </div>
+    </article>
+  );
+}
+
 export default function Plan() {
   const navigate = useNavigate();
   const plans = Plans();
   const [choosePlan, setChoosePlan] = useState({});
   const [showCart, setShowCart] = useState(false);
-  const [Address] = useState([
-  ]);
-
+  const [Address] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState({
     status: false,
     address: null,
   });
   const errorRef = useRef(null);
+
   const handlePurchase = async (e) => {
-    e.currentTarget?.childNodes[1].classList.remove("hidden");
+    e.currentTarget?.childNodes[1]?.classList.remove("hidden");
     try {
-      //get key
       const getKeyUrl = `${process.env.REACT_APP_BACKEND_HOST}/getKey`;
       const KeyResponse = await fetch(getKeyUrl, {
         method: "GET",
@@ -31,17 +156,14 @@ export default function Plan() {
       });
       const KeyData = await KeyResponse.json();
       if (!KeyResponse.ok) {
-        e.currentTarget?.childNodes[1].classList.add("hidden");
-        console.log(KeyData);
+        e.currentTarget?.childNodes[1]?.classList.add("hidden");
         errorRef.current.style.color = "red";
         errorRef.current.textContent = KeyData.message;
         return;
       }
-      console.log(KeyData.message);
       errorRef.current.style.color = "green";
       errorRef.current.textContent = KeyData.message;
 
-      //get Plan details
       const getPlanDetailsUrl = `${process.env.REACT_APP_BACKEND_HOST}/get_unique_plan`;
       const PlanDetailsResponse = await fetch(getPlanDetailsUrl, {
         method: "POST",
@@ -51,17 +173,13 @@ export default function Plan() {
       });
       const PlanDetailsData = await PlanDetailsResponse.json();
       if (!PlanDetailsResponse.ok) {
-        e.currentTarget?.childNodes[1].classList.add("hidden");
-        console.log(PlanDetailsData);
-        errorRef.current.style.color = "red";
+        e.currentTarget?.childNodes[1]?.classList.add("hidden");
         errorRef.current.textContent = PlanDetailsData.message;
         return;
       }
-      console.log(PlanDetailsData.message);
       errorRef.current.style.color = "green";
       errorRef.current.textContent = PlanDetailsData.message;
 
-      //create Order
       const createOrderUrl = `${process.env.REACT_APP_BACKEND_HOST}/createOrder`;
       const createOrderResponse = await fetch(createOrderUrl, {
         method: "POST",
@@ -71,18 +189,13 @@ export default function Plan() {
       });
       const createOrderData = await createOrderResponse.json();
       if (!createOrderResponse.ok) {
-        e.currentTarget?.childNodes[1].classList.add("hidden");
-        console.log(createOrderData.message);
-        errorRef.current.style.color = "red";
+        e.currentTarget?.childNodes[1]?.classList.add("hidden");
         errorRef.current.textContent = createOrderData.message;
         return;
       }
-
-      console.log(createOrderData.message);
       errorRef.current.style.color = "green";
       errorRef.current.textContent = createOrderData.message;
 
-      //make payment
       const options = {
         key: KeyData.key,
         amount: parseInt(PlanDetailsData.plans.price) * 100,
@@ -109,16 +222,14 @@ export default function Plan() {
             );
             const verifyData = await verifyResponse.json();
             if (!verifyResponse.ok) {
-              e.currentTarget?.childNodes[1].classList.add("hidden");
-              console.log(verifyData.message);
+              e.currentTarget?.childNodes[1]?.classList.add("hidden");
               errorRef.current.style.color = "red";
               errorRef.current.textContent = verifyData.message;
               setShowCart(false);
               alert(verifyData.message);
               return;
             }
-            e.currentTarget?.childNodes[1].classList.add("hidden");
-            console.log(verifyData.message);
+            e.currentTarget?.childNodes[1]?.classList.add("hidden");
             window.localStorage.setItem(
               "tempUser",
               JSON.stringify(verifyData.data)
@@ -149,25 +260,16 @@ export default function Plan() {
                     paid: PlanDetailsData.plans.price,
                     invoice: response.razorpay_payment_id.slice(4),
                     expires: PlanDetailsData.plans.name
-                      .toLowerCase()
-                      .includes("month")
-                      ? 30
-                      : PlanDetailsData.plans.name
-                          .toLowerCase()
-                          .includes("year")
-                      ? 365
-                      : PlanDetailsData.plans.name
-                          .toLowerCase()
-                          .includes("unlimited")
-                      ? 365 * 10
+                      .toLowerCase().includes("month") ? 30
+                      : PlanDetailsData.plans.name.toLowerCase().includes("year") ? 365
+                      : PlanDetailsData.plans.name.toLowerCase().includes("unlimited") ? 365 * 10
                       : 0,
                   },
                 },
               });
             }, 2000);
           } catch (error) {
-            e.currentTarget?.childNodes[1].classList.add("hidden");
-            console.log(error.message);
+            e.currentTarget?.childNodes[1]?.classList.add("hidden");
             errorRef.current.style.color = "red";
             errorRef.current.textContent = error.message;
             setShowCart(false);
@@ -176,555 +278,211 @@ export default function Plan() {
         },
         modal: {
           ondismiss: function () {
-            console.log("Razorpay window closed by user.");
             errorRef.current.style.color = "red";
             errorRef.current.textContent =
               "recent payment was canceled. Please try again to complete your purchase.";
             setShowCart(false);
           },
         },
-        notes: {
-          address: "Razorpay Corporate Office",
-        },
+        notes: { address: "Razorpay Corporate Office" },
         prefill: {
-          name: KeyData.user.name, // Optional: Prefill user name
-          email: KeyData.user.email, // Optional: Prefill user email
-          contact: KeyData.user.contact[0], // **Mandatory for prefilling mobile number**
+          name: KeyData.user.name,
+          email: KeyData.user.email,
+          contact: KeyData.user.contact[0],
         },
-        theme: {
-          color: "#3399cc",
-        },
+        theme: { color: "#3399cc" },
       };
       const paymentObject = new window.Razorpay(options);
       paymentObject.open();
     } catch (error) {
-      e.currentTarget?.childNodes[1].classList.add("hidden");
-      console.log(error);
-      errorRef.current.style.color = "red";
+      e.currentTarget?.childNodes[1]?.classList.add("hidden");
       errorRef.current.textContent = error.message;
     }
   };
-  return !plans ? (
-    <section className="w-screen h-screen flex justify-center items-center">
-      <p className="w-28 h-28 rounded-full border-8 border-l-violet-500 border-r-green-500 border-b-orange-600 border-t-red-500 animate-[spin_0.3s_linear_infinite]"></p>
-    </section>
-  ) : (
-    <section className="w-screen h-screen overflow-scroll noscrollbar p-2 xsm:p-8 flex flex-col gap-8">
-      <p
-        className="flex items-center gap-2"
-        onClick={() => {
-          navigate(-1);
-        }}
-      >
-        <FaArrowAltCircleLeft className="text-2xl cursor-pointer" />
-        Go back
-      </p>
-      <h1 className="text-center font-georgia text-4xl">Choose your Plan</h1>
-      {/* trial */}
-      {plans.trial && (
-        <article className="flex flex-wrap gap-4">
-          <h1 className="flex basis-full text-xl">Trial Plan</h1>
-          {plans.trial.map((item, index) => (
-            <article
-              key={`plan/trial/${index}`}
-              className="border-2 py-4 px-12 rounded-lg flex flex-col gap-2 shadow-[0.1rem_0.1rem_1rem_0.1rem_gray_inset] justify-between md:w-[45%] lg:w-[30%]"
-            >
-              <div className="flex justify-between items-center text-xl">
-                <strong>{item.name}</strong>
-                <strong>₹{item.price}</strong>
+
+  if (!plans) {
+    return (
+      <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50">
+        <p className="w-14 h-14 rounded-full border-4 border-blue-600 border-t-transparent animate-spin"></p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors mb-8"
+        >
+          <FaArrowAltCircleLeft className="text-lg" />
+          Back
+        </button>
+
+        <div className="text-center mb-10 sm:mb-14">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
+            Choose your <span className="text-blue-600">Plan</span>
+          </h1>
+          <p className="mt-3 text-lg text-gray-500 max-w-xl mx-auto">
+            Pick the perfect plan for your file conversion needs
+          </p>
+        </div>
+
+        {categories.map(({ key, label, popular }) => {
+          const items = plans[key];
+          if (!items || items.length === 0) return null;
+          return (
+            <section key={key} className="mb-12 last:mb-0">
+              <div className="flex items-center gap-3 mb-6">
+                <h2 className="text-xl font-bold text-gray-800">{label}</h2>
+                <div className="flex-1 h-px bg-gray-200"></div>
               </div>
-              <p className="break-words">{item.description.slice(0, 50)}...</p>
-              <span className="flex gap-2">
-                <strong>Max Conversion : </strong>
-                <p>{item.maxConversions}</p>
-              </span>
-              <span className="flex gap-2">
-                <strong>Max FileSize (MB) : </strong>
-                <p>{item.maxFileSizeMB}</p>
-              </span>
-              <span className="flex gap-2">
-                <strong>Batch Limit : </strong>
-                <p>{item.batchLimit}</p>
-              </span>
-              <span className="flex gap-2">
-                <strong>Support : </strong>
-                <p>{item.support}</p>
-              </span>
-              <div className="flex flex-col gap-1">
-                <strong>Formats : </strong>
-                <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
-                  {JSON.parse(item.formats).map((item, index) => (
-                    <li key={`plan/trial/formats/${index}`}>{item}</li>
-                  ))}
-                </ol>
-              </div>
-              <div className="flex flex-col gap-1">
-                <strong>Advantages : </strong>
-                <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
-                  {JSON.parse(item.advantages).map((item, index) => (
-                    <li key={`plan/trial/advantages/${index}`}>{item}</li>
-                  ))}
-                </ol>
-              </div>
-              <div className="flex flex-nowrap gap-2 self-center justify-center items-center mt-4">
-                <button
-                  disabled={choosePlan.id ? true : false}
-                  className="px-8 py-2 bg-primary rounded-md text-white"
-                  onClick={(e) => {
-                    e.target.textContent = "Selected";
-                    setChoosePlan(item);
-                  }}
-                >
-                  Select
-                </button>
-                {choosePlan.id === item.id && (
-                  <MdDelete
-                    className="text-2xl text-red-600 cursor-pointer"
-                    onClick={(e) => {
-                      e.currentTarget.parentElement.childNodes[0].textContent =
-                        "Select";
-                      setChoosePlan({});
-                    }}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {items.map((item, index) => (
+                  <PlanCard
+                    key={`${key}/${index}`}
+                    item={item}
+                    choosePlan={choosePlan}
+                    setChoosePlan={(p) => { setChoosePlan(p); setShowCart(false); }}
+                    popular={popular && index === 0}
                   />
+                ))}
+              </div>
+            </section>
+          );
+        })}
+
+        {choosePlan.id && (
+          <div className="fixed bottom-6 right-6 z-40 animate-[fromLeft_0.3s_ease]">
+            <button
+              onClick={() => setShowCart(true)}
+              className="px-6 py-3 bg-blue-600 text-white rounded-xl shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-200 font-semibold text-sm flex items-center gap-3"
+            >
+              Proceed to Checkout
+              <span className="animate-[fromLeft_1s_infinite_ease]">{">>>"}</span>
+            </button>
+          </div>
+        )}
+
+        {showCart && (
+          <article className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <article className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 relative">
+              <button
+                onClick={() => setShowCart(false)}
+                className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <ImCross className="text-lg text-gray-500" />
+              </button>
+
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Checkout</h2>
+              <p className="text-sm text-gray-500 mb-6">Complete your purchase</p>
+
+              <div className="bg-gray-50 rounded-xl p-4 mb-6">
+                <h3 className="font-semibold text-gray-900 mb-2">Plan Summary</h3>
+                <div className="space-y-1.5 text-sm">
+                  <p className="flex justify-between"><span className="text-gray-500">Plan</span><span className="font-medium">{choosePlan.name}</span></p>
+                  <p className="flex justify-between"><span className="text-gray-500">Price</span><span className="font-medium">₹{choosePlan.price}</span></p>
+                  <p className="flex justify-between"><span className="text-gray-500">Conversions</span><span className="font-medium">{choosePlan.maxConversions === 0 ? "Unlimited" : choosePlan.maxConversions}</span></p>
+                  <p className="flex justify-between"><span className="text-gray-500">File Size</span><span className="font-medium">{choosePlan.maxFileSizeMB === 0 ? "Unlimited" : `${choosePlan.maxFileSizeMB}MB`}</span></p>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-900 mb-3">Billing Address</h3>
+                {Address.length > 0 ? (
+                  <div className="space-y-2">
+                    {Address.map((item, index) => (
+                      <label
+                        key={`address/${index}`}
+                        className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
+                          selectedAddress.address === item
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="address"
+                          checked={selectedAddress.address === item}
+                          onChange={() => setSelectedAddress({ status: false, address: item })}
+                          className="mt-1"
+                        />
+                        <span className="text-sm text-gray-700">
+                          {item.street}, {item.city}, {item.state} - {item.pin}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-400 text-center py-3">No saved address found</p>
+                )}
+
+                <button
+                  onClick={() => {
+                    if (document.querySelectorAll('input[type="radio"]')[0]) {
+                      document.querySelectorAll('input[type="radio"]')[0].checked = false;
+                    }
+                    setSelectedAddress({ status: true, address: { street: "", city: "", state: "", pin: "" } });
+                  }}
+                  className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 mt-3 transition-colors"
+                >
+                  <IoMdAdd className="text-lg" />
+                  Add new address
+                </button>
+
+                {selectedAddress.status && (
+                  <div className="mt-4 space-y-3">
+                    <input
+                      placeholder="Street / Building No."
+                      value={selectedAddress.address?.street || ""}
+                      onChange={(e) => setSelectedAddress(p => ({ ...p, address: { ...p.address, street: e.target.value } }))}
+                      className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <div className="grid grid-cols-2 gap-3">
+                      <input
+                        placeholder="City / District"
+                        value={selectedAddress.address?.city || ""}
+                        onChange={(e) => setSelectedAddress(p => ({ ...p, address: { ...p.address, city: e.target.value } }))}
+                        className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <input
+                        placeholder="State"
+                        value={selectedAddress.address?.state || ""}
+                        onChange={(e) => setSelectedAddress(p => ({ ...p, address: { ...p.address, state: e.target.value } }))}
+                        className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <input
+                      placeholder="PIN Code"
+                      type="number"
+                      value={selectedAddress.address?.pin || ""}
+                      onChange={(e) => setSelectedAddress(p => ({ ...p, address: { ...p.address, pin: e.target.value } }))}
+                      className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
                 )}
               </div>
-            </article>
-          ))}
-        </article>
-      )}
-      {/* monthly */}
-      <article className="flex flex-wrap gap-4">
-        <h1 className="flex basis-full text-xl">Monthly Plan</h1>
-        {plans.monthly.map((item, index) => (
-          <article
-            key={`plan/monthly/${index}`}
-            className="border-2 p-4 rounded-lg flex flex-col gap-2 grow shadow-[0.1rem_0.1rem_1rem_0.1rem_gray_inset] justify-between md:w-[45%] lg:w-[30%]"
-          >
-            <div className="flex justify-between items-center text-xl">
-              <strong>{item.name}</strong>
-              <strong>₹{item.price}</strong>
-            </div>
-            <p className="break-words">{item.description.slice(0, 50)}...</p>
-            <span className="flex gap-2">
-              <strong>Max Conversion : </strong>
-              <p>{item.maxConversions}</p>
-            </span>
-            <span className="flex gap-2">
-              <strong>Max FileSize (MB) : </strong>
-              <p>{item.maxFileSizeMB}</p>
-            </span>
-            <span className="flex gap-2">
-              <strong>Batch Limit : </strong>
-              <p>{item.batchLimit}</p>
-            </span>
-            <span className="flex gap-2">
-              <strong>Support : </strong>
-              <p>{item.support}</p>
-            </span>
-            <div className="flex flex-col gap-1">
-              <strong>Formats : </strong>
-              <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
-                {JSON.parse(item.formats).map((item, index) => (
-                  <li key={`plan/monthly/formats/${index}`}>{item}</li>
-                ))}
-              </ol>
-            </div>
-            <div className="flex flex-col gap-1">
-              <strong>Advantages : </strong>
-              <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
-                {JSON.parse(item.advantages).map((item, index) => (
-                  <li key={`plan/monthly/advantages/${index}`}>{item}</li>
-                ))}
-              </ol>
-            </div>
-            <div className="flex flex-nowrap gap-2 self-center justify-center items-center mt-4">
-              <button
-                disabled={choosePlan.id ? true : false}
-                className="px-8 py-2 bg-primary rounded-md text-white"
-                onClick={(e) => {
-                  e.target.textContent = "Selected";
-                  setChoosePlan(item);
-                }}
-              >
-                Select
-              </button>
-              {choosePlan.id === item.id && (
-                <MdDelete
-                  className="text-2xl text-red-600 cursor-pointer"
-                  onClick={(e) => {
-                    e.currentTarget.parentElement.childNodes[0].textContent =
-                      "Select";
-                    setChoosePlan({});
-                  }}
-                />
-              )}
-            </div>
-          </article>
-        ))}
-      </article>
 
-      {/* yearly */}
-      <article className="flex flex-wrap gap-4">
-        <h1 className="flex basis-full text-xl">Yearly Plan</h1>
-        {plans.yearly.map((item, index) => (
-          <article
-            key={`plan/yearly/${index}`}
-            className="border-2 p-4 rounded-lg flex flex-col gap-2 grow shadow-[0.1rem_0.1rem_1rem_0.1rem_gray_inset] justify-between md:w-[45%] lg:w-[30%]"
-          >
-            <div className="flex justify-between items-center text-xl">
-              <strong>{item.name}</strong>
-              <strong>₹{item.price}</strong>
-            </div>
-            <p className="break-words">{item.description.slice(0, 50)}...</p>
-            <span className="flex gap-2">
-              <strong>Max Conversion : </strong>
-              <p>{item.maxConversions}</p>
-            </span>
-            <span className="flex gap-2">
-              <strong>Max FileSize (MB) : </strong>
-              <p>{item.maxFileSizeMB}</p>
-            </span>
-            <span className="flex gap-2">
-              <strong>Batch Limit : </strong>
-              <p>{item.batchLimit}</p>
-            </span>
-            <span className="flex gap-2">
-              <strong>Support : </strong>
-              <p>{item.support}</p>
-            </span>
-            <div className="flex flex-col gap-1">
-              <strong>Formats : </strong>
-              <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
-                {JSON.parse(item.formats).map((item, index) => (
-                  <li key={`plan/yearly/formats/${index}`}>{item}</li>
-                ))}
-              </ol>
-            </div>
-            <div className="flex flex-col gap-1">
-              <strong>Advantages : </strong>
-              <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
-                {JSON.parse(item.advantages).map((item, index) => (
-                  <li key={`plan/yearly/advantages/${index}`}>{item}</li>
-                ))}
-              </ol>
-            </div>
-            <div className="flex flex-nowrap gap-2 self-center justify-center items-center mt-4">
               <button
-                disabled={choosePlan.id ? true : false}
-                className="px-8 py-2 bg-primary rounded-md text-white"
-                onClick={(e) => {
-                  e.target.textContent = "Selected";
-                  setChoosePlan(item);
-                }}
-              >
-                Select
-              </button>
-              {choosePlan.id === item.id && (
-                <MdDelete
-                  className="text-2xl text-red-600 cursor-pointer"
-                  onClick={(e) => {
-                    e.currentTarget.parentElement.childNodes[0].textContent =
-                      "Select";
-                    setChoosePlan({});
-                  }}
-                />
-              )}
-            </div>
-          </article>
-        ))}
-      </article>
-
-      {/* Unlimited */}
-      <article className="flex flex-wrap gap-4">
-        <h1 className="flex basis-full text-xl">Unlimited Plan</h1>
-        {plans.unlimited.map((item, index) => (
-          <article
-            key={`plan/unlimited/${index}`}
-            className={`border-2 p-4 rounded-lg flex flex-col ${
-              plans.unlimited.length > 1 && "grow"
-            } gap-2 shadow-[0.1rem_0.1rem_1rem_0.1rem_gray_inset] justify-between md:w-[45%] lg:w-[30%]`}
-          >
-            <div className="flex justify-between items-center text-xl">
-              <strong>{item.name}</strong>
-              <strong>₹{item.price}</strong>
-            </div>
-            <p className="break-words">{`${
-              plans.unlimited.length > 1
-                ? `${item.description.slice(0, 50)}...`
-                : item.description
-            }`}</p>
-            <span className="flex gap-2">
-              <strong>Max Conversion : </strong>
-              <p>{item.maxConversions === 0 ? "unlimited" : "..."}</p>
-            </span>
-            <span className="flex gap-2">
-              <strong>Max FileSize (MB) : </strong>
-              <p>{item.maxFileSizeMB === 0 ? "unlimited" : "..."}</p>
-            </span>
-            <span className="flex gap-2">
-              <strong>Batch Limit : </strong>
-              <p>{item.batchLimit === 0 ? "unlimited" : "..."}</p>
-            </span>
-            <span className="flex gap-2">
-              <strong>Support : </strong>
-              <p>{item.support}</p>
-            </span>
-            <div className="flex flex-col gap-1">
-              <strong>Formats : </strong>
-              <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
-                {JSON.parse(item.formats).map((item, index) => (
-                  <li key={`plan/unlimited/formats/${index}`}>{item}</li>
-                ))}
-              </ol>
-            </div>
-            <div className="flex flex-col gap-1">
-              <strong>Advantages : </strong>
-              <ol className="flex flex-col gap-2 pl-4 list-disc list-inside">
-                {JSON.parse(item.advantages).map((item, index) => (
-                  <li key={`plan/unlimited/advantages/${index}`}>{item}</li>
-                ))}
-              </ol>
-            </div>
-            <div className="flex flex-nowrap gap-2 self-center justify-center items-center mt-4">
-              <button
-                disabled={choosePlan.id ? true : false}
-                className="px-8 py-2 bg-primary rounded-md text-white"
-                onClick={(e) => {
-                  e.target.textContent = "Selected";
-                  setChoosePlan(item);
-                }}
-              >
-                Select
-              </button>
-              {choosePlan.id === item.id && (
-                <MdDelete
-                  className="text-2xl text-red-600 cursor-pointer"
-                  onClick={(e) => {
-                    e.currentTarget.parentElement.childNodes[0].textContent =
-                      "Select";
-                    setChoosePlan({});
-                  }}
-                />
-              )}
-            </div>
-          </article>
-        ))}
-      </article>
-
-      {/* type of add to cart */}
-      {showCart && (
-        <article className="absolute top-0 right-0 z-10 w-[75%] md:w-1/3 lg:w-1/4 h-screen bg-white p-4 flex flex-col gap-4 shadow-[0_0.1rem_0.8rem_0.1rem_black]">
-          {/* address details */}
-          <article className="flex flex-col gap-4">
-            <h1>Billing Address :-</h1>
-            {Address.length > 0 ? (
-              <article className="flex flex-col gap-4">
-                {Address.map((item, index) => (
-                  <article key={`address/${index}`} className="flex gap-4">
-                    <input
-                      type="radio"
-                      name="address"
-                      id={`address/${index}`}
-                      onChange={() =>
-                        setSelectedAddress(() => ({
-                          status: false,
-                          address: item,
-                        }))
-                      }
-                    />
-                    <label htmlFor={`address/${index}`}>
-                      {item.street +
-                        " ," +
-                        item.city +
-                        " ," +
-                        item.state +
-                        " ," +
-                        item.pin}
-                    </label>
-                  </article>
-                ))}
-              </article>
-            ) : (
-              <strong className="text-red text-center">No Address Found</strong>
-            )}
-            <span
-              className="flex gap-2 items-center text-blue-500 cursor-pointer"
-              onClick={() => {
-                if (document.querySelectorAll('input[type="radio"]')[0]) {
-                  document.querySelectorAll(
-                    'input[type="radio"]'
-                  )[0].checked = false;
+                disabled={
+                  !(
+                    selectedAddress.address?.street &&
+                    selectedAddress.address?.city &&
+                    selectedAddress.address?.state &&
+                    selectedAddress.address?.pin
+                  )
                 }
-                setSelectedAddress(() => ({
-                  status: true,
-                  address: { street: null, city: null, state: null, pin: null },
-                }));
-              }}
-            >
-              <IoMdAdd />
-              Add new Address
-            </span>
-            {selectedAddress.status && (
-              <article className="flex flex-col">
-                <article className="whitespace-nowrap flex flex-col items-center w-full sm:w-3/4 self-center">
-                  <label
-                    defaultValue={selectedAddress.street}
-                    htmlFor="addressstreet"
-                    id="addressstreetLabel"
-                    className="bg-white ml-4 z-[2] w-fit self-start after:content-['*'] after:text-red-600 after:ml-1"
-                  >
-                    Street/Building No.
-                  </label>
-                  <input
-                    defaultValue={selectedAddress.address.street}
-                    type="text"
-                    name="addressstreet"
-                    id="addressstreet"
-                    className="border-[1px] border-black rounded-md p-2 -mt-3 w-full flex grow"
-                    aria-required
-                    onChange={(e) =>
-                      setSelectedAddress((props) => ({
-                        ...props,
-                        address: { ...props.address, street: e.target.value },
-                      }))
-                    }
-                  />
-                </article>
-                <article className="flex gap-2">
-                  <article className="whitespace-nowrap flex flex-col items-center w-full sm:w-3/4">
-                    <label
-                      htmlFor="addresscity"
-                      id="addresscityLabel"
-                      className="bg-white ml-4 z-[2] w-fit self-start after:content-['*'] after:text-red-600 after:ml-1"
-                    >
-                      City/District
-                    </label>
-                    <input
-                      defaultValue={selectedAddress.address.city}
-                      type="text"
-                      name="addresscity"
-                      id="addresscity"
-                      className="border-[1px] border-black rounded-md p-2 -mt-3 w-full"
-                      aria-required
-                      onChange={(e) =>
-                        setSelectedAddress((props) => ({
-                          ...props,
-                          address: { ...props.address, city: e.target.value },
-                        }))
-                      }
-                    />
-                  </article>
-                  <article className="whitespace-nowrap flex flex-col items-center w-full sm:w-3/4">
-                    <label
-                      htmlFor="addressstate"
-                      id="addressstateLabel"
-                      className="bg-white ml-4 z-[2] w-fit self-start after:content-['*'] after:text-red-600 after:ml-1"
-                    >
-                      State
-                    </label>
-                    <input
-                      defaultValue={selectedAddress.state}
-                      type="text"
-                      name="addressstate"
-                      id="addressstate"
-                      className="border-[1px] border-black rounded-md p-2 -mt-3 w-full"
-                      aria-required
-                      onChange={(e) =>
-                        setSelectedAddress((props) => ({
-                          ...props,
-                          address: { ...props.address, state: e.target.value },
-                        }))
-                      }
-                    />
-                  </article>
-                </article>
-                <article className="whitespace-nowrap flex flex-col items-center w-full sm:w-3/4 self-center">
-                  <label
-                    htmlFor="addresspin"
-                    id="addresspinLabel"
-                    className="bg-white ml-4 z-[2] w-fit self-start after:content-['*'] after:text-red-600 after:ml-1"
-                  >
-                    Pin
-                  </label>
-                  <input
-                    defaultValue={selectedAddress.pin}
-                    type="number"
-                    name="addresspin"
-                    id="addresspin"
-                    className="border-[1px] border-black rounded-md p-2 -mt-3 w-full"
-                    aria-required
-                    onChange={(e) =>
-                      setSelectedAddress((props) => ({
-                        ...props,
-                        address: { ...props.address, pin: e.target.value },
-                      }))
-                    }
-                  />
-                </article>
-              </article>
-            )}
-          </article>
-
-          {/* plan details */}
-          <article className="flex flex-col">
-            <h1>Plan Overview :-</h1>
-            <article className="flex flex-col h-full">
-              <ImCross
-                className="absolute top-2 right-2 text-red-500 text-2xl cursor-pointer"
-                onClick={() => setShowCart(false)}
-              />
-              <p>Plan Name : {choosePlan.name}</p>
-              <p>
-                Max Conversion :{" "}
-                {choosePlan.maxConversions === 0
-                  ? "unlimited"
-                  : choosePlan.maxConversions}
-              </p>
-              <p>
-                Max File Size (MB) :{" "}
-                {choosePlan.maxFileSizeMB === 0
-                  ? "unlimited"
-                  : choosePlan.maxFileSizeMB}
-              </p>
-              <p>
-                Batch Limit :{" "}
-                {choosePlan.batchLimit === 0
-                  ? "unlimited"
-                  : choosePlan.batchLimit}
-              </p>
-              <div className="absolute bottom-0 self-center p-2">
-                <button
-                  disabled={
-                    !(
-                      selectedAddress.address?.street &&
-                      selectedAddress.address?.city &&
-                      selectedAddress.address?.state &&
-                      selectedAddress.address?.pin
-                    )
-                  }
-                  className="px-8 py-2 rounded-md bg-blue-600 text-white flex gap-2"
-                  onClick={(e) => handlePurchase(e)}
-                >
-                  <p>Buy Now</p>
-                  <p className="hidden w-5 h-5 self-center aspect-square rounded-full border-4 border-l-violet-500 border-r-green-500 border-b-orange-600 border-t-red-500 animate-[spin_0.3s_linear_infinite]"></p>
-                </button>
-                <p className="text-red-500" ref={errorRef}></p>
-              </div>
+                onClick={(e) => handlePurchase(e)}
+                className="w-full py-3 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <span>Pay ₹{choosePlan.price}</span>
+                <span className="hidden w-5 h-5 rounded-full border-4 border-l-violet-500 border-r-green-500 border-b-orange-600 border-t-red-500 animate-[spin_0.3s_linear_infinite]"></span>
+              </button>
+              <p ref={errorRef} className="text-red-500 text-sm text-center mt-3"></p>
             </article>
           </article>
-        </article>
-      )}
-      {choosePlan.id && (
-        <article className="absolute bottom-0 right-0 z-[2]">
-          <div
-            className="px-8 py-2 bg-blue-600 rounded-l-md text-white flex gap-4 cursor-pointer"
-            onClick={() => setShowCart(true)}
-          >
-            Proceed
-            <span className="animate-[fromLeft_1s_infinite_ease]">{">>>"}</span>
-          </div>
-        </article>
-      )}
+        )}
+      </div>
     </section>
   );
-}    
+}
