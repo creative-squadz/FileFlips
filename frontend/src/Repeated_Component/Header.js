@@ -5,21 +5,27 @@ import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { RxCross2 } from "react-icons/rx";
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+
 export default function Header({ size }) {
-  const [showConverter, setShowConverter] = useState(false);
+  const [openSubmenu, setOpenSubmenu] = useState(null);
   const [slidebar, setSlidebar] = useState(false);
-  const converterArrowRef = useRef(null);
   const params = useParams();
+  const arrowRefs = useRef({});
   const [last3] = useState(
     params.email ? { x: -1, y: undefined } : { x: -3, y: -1 }
   );
+
   useEffect(() => {
-    if (showConverter) {
-      converterArrowRef.current?.classList.add("rotate-180");
-    } else {
-      converterArrowRef.current?.classList.remove("rotate-180");
-    }
-  }, [showConverter]);
+    Object.entries(arrowRefs.current).forEach(([key, el]) => {
+      if (el) {
+        el.classList.toggle("rotate-180", openSubmenu === Number(key));
+      }
+    });
+  }, [openSubmenu]);
+
+  const navItems = Nav(params.email).slice(0, -3);
+  const navEnd = Nav(params.email).slice(last3.x, last3.y);
+
   return size.width > 950 ? (
     <header className="sticky top-0 bg-white flex flex-nowrap gap-4 py-2 px-4 items-center shadow-[0.1rem_0.1rem_0.2rem_0.1rem_gray] whitespace-nowrap z-10">
       <Link
@@ -43,62 +49,56 @@ export default function Header({ size }) {
         placeholder="Search Converters (e.g. PDF to DOCX)"
       />
       <article className="flex gap-4 items-center">
-        {Nav(params.email)
-          .slice(0, -3)
-          .map((item, index) => (
-            <div
-              key={`navbar/firsthalf/item/${index}`}
-              className="relative flex flex-col gap-2"
-            >
-              <div className="flex items-center gap-2">
-                <Link to={params.email ? item.path : "/signin"}>{item.name}</Link>
-                {item.submenu && (
-                  <FaAngleDown
-                    ref={converterArrowRef}
-                    className="transition-all"
-                    onMouseEnter={() => {
-                      setShowConverter(!showConverter);
-                    }}
-                  />
-                )}
-              </div>
+        {navItems.map((item, index) => (
+          <div
+            key={`navbar/firsthalf/item/${index}`}
+            className="relative flex flex-col gap-2"
+          >
+            <div className="flex items-center gap-2">
+              <Link to={params.email ? item.path : "/signin"}>{item.name}</Link>
               {item.submenu && (
-                <div
-                  className={`absolute right-0 bg-white ${
-                    showConverter ? "flex" : "hidden"
-                  } flex-wrap items-center p-4 rounded-lg gap-4 w-[500px] mt-14 border-2 box-border shrink animate-[visibleIn_1s_ease] border-black whitespace-normal`}
-                  onMouseLeave={() => setShowConverter(!showConverter)}
-                >
-                  {item.submenu.map((inthere, index) => (
-                    <Link
-                      to={params.email ? inthere.path : "/signin"}
-                      key={`navbar/firsthalf/item/${item.name}/sub/${index}`}
-                      className="flex flex-col justify-between p-2 gap-2 items-center w-24 aspect-square text-center"
-                    >
-                      <inthere.icon className="text-4xl text-primary" />
-                      <p>{inthere.name}</p>
-                    </Link>
-                  ))}
-                </div>
+                <FaAngleDown
+                  ref={(el) => { arrowRefs.current[index] = el; }}
+                  className="transition-all cursor-pointer"
+                  onMouseEnter={() => setOpenSubmenu(index)}
+                />
               )}
             </div>
-          ))}
+            {item.submenu && (
+              <div
+                className={`absolute right-0 bg-white ${
+                  openSubmenu === index ? "flex" : "hidden"
+                } flex-wrap items-center p-4 rounded-lg gap-4 w-[500px] mt-14 border-2 box-border shrink animate-[visibleIn_1s_ease] border-black whitespace-normal`}
+                onMouseLeave={() => setOpenSubmenu(null)}
+              >
+                {item.submenu.map((inthere, subIndex) => (
+                  <Link
+                    to={params.email ? inthere.path : "/signin"}
+                    key={`navbar/firsthalf/item/${item.name}/sub/${subIndex}`}
+                    className="flex flex-col justify-between p-2 gap-2 items-center w-24 aspect-square text-center"
+                  >
+                    <inthere.icon className="text-4xl text-primary" />
+                    <p>{inthere.name}</p>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
       </article>
       <div className="min-h-full border-r-2 border-black">
         <p className="text-white">.</p>
       </div>
       <article className="flex gap-4 items-center">
-        {Nav(params.email)
-          .slice(last3.x, last3.y)
-          .map((item, index) => (
-            <Link
-              key={`navbar/secondhalf/item/${index}`}
-              to={item.path}
-              className="bg-primary px-4 py-2 rounded-md text-white"
-            >
-              {item.name}
-            </Link>
-          ))}
+        {navEnd.map((item, index) => (
+          <Link
+            key={`navbar/secondhalf/item/${index}`}
+            to={item.path}
+            className="bg-primary px-4 py-2 rounded-md text-white"
+          >
+            {item.name}
+          </Link>
+        ))}
       </article>
     </header>
   ) : (
@@ -131,73 +131,61 @@ export default function Header({ size }) {
         {slidebar && (
           <article
             className="fixed top-0 right-0 flex flex-col gap-8 mt-[72px] py-4 px-8 h-screen overflow-y-scroll noscrollbar bg-white z-10 shadow-[-0.2rem_0_0_0_#a0a0a0] transition-all animate-[fromRight_1s_ease]"
-            onMouseLeave={() => {
-              setSlidebar(false);
-            }}
+            onMouseLeave={() => { setSlidebar(false); }}
           >
-            {Nav(params.email)
-              .slice(0, -3)
-              .map((item, index) => (
-                <div
-                  key={`SlideMenuItem/item/${index}`}
-                  className="flex flex-col gap-4"
-                >
-                  <div
-                    key={`SlideMenuItem/${index}`}
-                    className="flex gap-4 items-center"
-                  >
-                    <item.icon className="text-2xl text-primary" />
-                    <Link to={params.email ? item.path : "/signin"} className="grow">
-                      {item.name}
-                    </Link>
-                    {item.submenu && (
-                      <FaAngleDown
-                        className="cursor-pointer"
-                        ref={converterArrowRef}
-                        onClick={() => {
-                          setShowConverter(!showConverter);
-                        }}
-                      />
-                    )}
-                  </div>
+            {navItems.map((item, index) => (
+              <div
+                key={`SlideMenuItem/item/${index}`}
+                className="flex flex-col gap-4"
+              >
+                <div className="flex gap-4 items-center">
+                  <item.icon className="text-2xl text-primary" />
+                  <Link to={params.email ? item.path : "/signin"} className="grow">
+                    {item.name}
+                  </Link>
                   {item.submenu && (
-                    <article
-                      className={`${
-                        showConverter ? "flex" : "hidden"
-                      } flex-col gap-4 ml-8`}
-                    >
-                      {item.submenu.map((inthere, index) => (
-                        <Link
-                          to={params.email ? inthere.path : "/signin"}
-                          key={`SlideMenuItem/item/${item.name}/sub/${index}`}
-                          className="flex gap-2 items-center"
-                        >
-                          <inthere.icon className="text-xl text-primary" />
-                          <p className="grow">{inthere.name}</p>
-                        </Link>
-                      ))}
-                    </article>
+                    <FaAngleDown
+                      ref={(el) => { arrowRefs.current[index] = el; }}
+                      className="cursor-pointer transition-all"
+                      onClick={() => {
+                        setOpenSubmenu(openSubmenu === index ? null : index);
+                      }}
+                    />
                   )}
                 </div>
-              ))}
-            {Nav(params.email)
-              .slice(last3.x, last3.y)
-              .map((item, index) => (
-                <div
-                  key={`SlideMenuItem/item/${index}`}
-                  className="flex flex-col gap-4"
-                >
-                  <div
-                    key={`SlideMenuItem/${index}`}
-                    className="flex gap-4 items-center"
+                {item.submenu && (
+                  <article
+                    className={`${
+                      openSubmenu === index ? "flex" : "hidden"
+                    } flex-col gap-4 ml-8`}
                   >
-                    <item.icon className="text-2xl text-primary" />
-                    <Link to={item.path} className="grow">
-                      {item.name}
-                    </Link>
-                  </div>
+                    {item.submenu.map((inthere, subIndex) => (
+                      <Link
+                        to={params.email ? inthere.path : "/signin"}
+                        key={`SlideMenuItem/item/${item.name}/sub/${subIndex}`}
+                        className="flex gap-2 items-center"
+                      >
+                        <inthere.icon className="text-xl text-primary" />
+                        <p className="grow">{inthere.name}</p>
+                      </Link>
+                    ))}
+                  </article>
+                )}
+              </div>
+            ))}
+            {navEnd.map((item, index) => (
+              <div
+                key={`SlideMenuItem/navEnd/${index}`}
+                className="flex flex-col gap-4"
+              >
+                <div className="flex gap-4 items-center">
+                  <item.icon className="text-2xl text-primary" />
+                  <Link to={item.path} className="grow">
+                    {item.name}
+                  </Link>
                 </div>
-              ))}
+              </div>
+            ))}
           </article>
         )}
       </article>
