@@ -187,7 +187,7 @@ const googleSignIn = async (req, res) => {
           middle_name: null,
           last_name: family_name || "User",
           gender: "other",
-          mobile_no: `0000000000`,
+          mobile_no: `g${googleId.slice(0, 9)}`,
           email: email,
           password: hashedPassword,
           reference_token: initialRefToken,
@@ -251,7 +251,10 @@ const googleSignIn = async (req, res) => {
       planDetails: ExistingPlan ? ExistingPlan : false,
     });
   } catch (error) {
-    console.log("Google sign-in error:", error);
+    console.log("Google sign-in error:", error.message);
+    if (error.code === "P2002") {
+      return res.status(409).json({ message: "An account with this email already exists. Please sign in with your password." });
+    }
     return res.status(500).json({ message: "Google sign-in failed. Please try again." });
   }
 };
