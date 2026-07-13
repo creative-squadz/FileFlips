@@ -149,6 +149,29 @@ const signUp = async (req, res) => {
   }
 };
 
+const getProfile = async (req, res) => {
+  const { encryptedEmail } = req.params;
+  try {
+    const decrypt = require("../utils/usefulFunction/decryption");
+    const email = decrypt(encryptedEmail);
+    const user = await prisma.users.findUnique({
+      where: { email },
+      select: {
+        first_name: true,
+        last_name: true,
+        email: true,
+        auth_provider: true,
+      },
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json({ user });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 const signOut = async (req, res) => {};
 
 const googleSignIn = async (req, res) => {
@@ -344,4 +367,4 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { signIn, signUp, signOut, forgotPassword, resetPassword, googleSignIn };
+module.exports = { signIn, signUp, signOut, forgotPassword, resetPassword, googleSignIn, getProfile };

@@ -1,5 +1,6 @@
 import Nav from "../assets/Site_Details/Primary/nav";
 import siteInfo from "../assets/Site_Details/Primary/siteInfo";
+import ProfileDropdown from "./ProfileDropdown";
 import { FaAngleDown } from "react-icons/fa";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { RxCross2 } from "react-icons/rx";
@@ -91,15 +92,19 @@ export default function Header({ size }) {
         <p className="text-white">.</p>
       </div>
       <article className="flex gap-4 items-center">
-        {navEnd.map((item, index) => (
-          <Link
-            key={`navbar/secondhalf/item/${index}`}
-            to={item.path}
-            className="bg-primary px-4 py-2 rounded-md text-white"
-          >
-            {item.name}
-          </Link>
-        ))}
+        {params.email ? (
+          <ProfileDropdown size={size} />
+        ) : (
+          navEnd.map((item, index) => (
+            <Link
+              key={`navbar/secondhalf/item/${index}`}
+              to={item.path}
+              className="bg-primary px-4 py-2 rounded-md text-white"
+            >
+              {item.name}
+            </Link>
+          ))
+        )}
       </article>
     </header>
   ) : (
@@ -175,19 +180,25 @@ export default function Header({ size }) {
                 )}
               </div>
             ))}
-            {navEnd.map((item, index) => (
-              <div
-                key={`SlideMenuItem/navEnd/${index}`}
-                className="flex flex-col gap-4"
-              >
-                <div className="flex gap-4 items-center">
-                  <item.icon className="text-2xl text-primary" />
-                  <Link to={item.path} className="grow">
-                    {item.name}
-                  </Link>
-                </div>
+            {params.email ? (
+              <div className="flex gap-4 items-center px-8">
+                <ProfileDropdown size={size} />
               </div>
-            ))}
+            ) : (
+              navEnd.map((item, index) => (
+                <div
+                  key={`SlideMenuItem/navEnd/${index}`}
+                  className="flex flex-col gap-4"
+                >
+                  <div className="flex gap-4 items-center">
+                    <item.icon className="text-2xl text-primary" />
+                    <Link to={item.path} className="grow">
+                      {item.name}
+                    </Link>
+                  </div>
+                </div>
+              ))
+            )}
           </article>
         )}
       </article>

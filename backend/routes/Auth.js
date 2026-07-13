@@ -7,5 +7,6 @@ router.route("/signout").post(Auth.signOut);
 router.route("/forgot_password").post(Auth.forgotPassword);
 router.route("/reset_password/:token").post(Auth.resetPassword);
 router.route("/google-signin").post(Auth.googleSignIn);
+router.route("/profile/:encryptedEmail").get(Auth.getProfile);
 
 module.exports = router;
