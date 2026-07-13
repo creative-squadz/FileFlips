@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
+import { GoogleLogin } from "@react-oauth/google";
 import siteInfo from "../assets/Site_Details/Primary/siteInfo";
 export default function SignIn() {
   const [userCredentials, setUserCredentials] = useState({
@@ -20,6 +21,46 @@ export default function SignIn() {
       return "Invalid email format.";
     }
   }
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    errorRef.current.textContent = "";
+    errorRef.current.style.color = "";
+    const url = `${process.env.REACT_APP_BACKEND_HOST}/google-signin`;
+    try {
+      const response = await fetch(url, {
+        headers: { "content-type": "application/json" },
+        method: "POST",
+        body: JSON.stringify({ credential: credentialResponse.credential }),
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        errorRef.current.textContent = data.message;
+        return;
+      }
+      errorRef.current.style.color = "green";
+      errorRef.current.textContent = data.message;
+      data.planDetails &&
+        window.localStorage.setItem(
+          "tempUser",
+          JSON.stringify({
+            used: data.planDetails.used,
+            max: data.planDetails.max,
+            maxSize: data.planDetails.maxSize,
+            formatAllowed: data.planDetails.conversion_allowed,
+          })
+        );
+      setTimeout(() => {
+        navigate(`/${data.encryptedEmail}/home`, { replace: true });
+      }, 1500);
+    } catch (error) {
+      errorRef.current.textContent = "Google sign-in failed. Please try again.";
+    }
+  };
+
+  const handleGoogleError = () => {
+    errorRef.current.textContent = "Google sign-in was cancelled or failed.";
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -174,6 +215,21 @@ export default function SignIn() {
         <Link to={"/forgot_password"} className="text-primary self-center">
           Forgot your password?
         </Link>
+        <article className="flex items-center gap-3 w-full sm:w-3/4 mx-auto my-1">
+          <hr className="flex-1 border-gray-300" />
+          <span className="text-gray-400 text-sm whitespace-nowrap">or continue with</span>
+          <hr className="flex-1 border-gray-300" />
+        </article>
+        <article className="flex justify-center">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            text="signin_with"
+            shape="rectangular"
+            size="large"
+            width="280"
+          />
+        </article>
         <span className="text-center">
           Don't have an account?{" "}
           <Link to={"/signup"} className="text-primary font-semibold">

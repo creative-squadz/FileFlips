@@ -24,13 +24,14 @@
 | `SMTP_PASS` | SMTP password or app-specific password | Yes |
 | `EMAIL_FROM` | Sender email address (defaults to `SMTP_USER`) | No |
 | `FRONTEND_URL` | Frontend URL for reset link (e.g., `http://localhost:3000`) | Yes |
+| `GOOGLE_CLIENT_ID` | Google OAuth 2.0 Client ID for Google Sign-In | Yes |
 
 ### Frontend (`frontend/.env`)
 
 | Variable | Description | Required |
 |----------|-------------|----------|
 | `REACT_APP_BACKEND_HOST` | Backend API base URL (e.g., `http://localhost:8080`) | Yes |
-| `REACT_APP_GOOGLE_CLIENT_ID` | Google OAuth Client ID for Drive Picker | No (optional feature) |
+| `REACT_APP_GOOGLE_CLIENT_ID` | Google OAuth Client ID for Sign-In + Drive Picker | Yes |
 | `REACT_APP_GOOGLE_API_KEY` | Google API Key for Drive Picker | No (optional feature) |
 | `REACT_APP_ONEDRIVE_CLIENT_ID` | OneDrive client ID for file picker | No (optional feature) |
 
@@ -54,11 +55,16 @@
 - For Gmail: enable 2FA, then create an App Password at https://myaccount.google.com/apppasswords
 - Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `FRONTEND_URL` in backend `.env`
 
-### 5. Google APIs (Optional - for Google Drive file picker)
+### 5. Google OAuth (Required for Google Sign-In)
 - Create a project at https://console.cloud.google.com
-- Enable Google Picker API and Google Drive API
-- Create OAuth 2.0 credentials (Web application type)
-- Set `REACT_APP_GOOGLE_CLIENT_ID` and `REACT_APP_GOOGLE_API_KEY`
+- Go to **APIs & Services** → **Credentials** → **Create Credentials** → **OAuth 2.0 Client ID**
+- Application type: **Web application**
+- Authorized JavaScript origins: add `http://localhost:3000` and `https://www.fileflips.com`
+- Authorized redirect URIs: add `http://localhost:3000` and `https://www.fileflips.com`
+- Copy the **Client ID** and set it as both:
+  - `GOOGLE_CLIENT_ID` in backend `.env`
+  - `REACT_APP_GOOGLE_CLIENT_ID` in frontend `.env`
+- **Important:** Also enable the Google Sign-In API in your project under **APIs & Services** → **Library**
 
 ### 6. Dropbox (Optional)
 - The Dropbox picker uses a hardcoded app key in `frontend/public/index.html`
@@ -116,6 +122,7 @@ npm start
 | POST | `/signout` | User logout |
 | POST | `/forgot_password` | Send password reset email |
 | POST | `/reset_password/:token` | Reset password with token |
+| POST | `/google-signin` | Google OAuth sign-in / sign-up |
 | POST | `/api/convert` | File conversion (multipart) |
 | POST | `/user_entry` | Track file conversion usage |
 | GET | `/get_plan` | Get all subscription plans |

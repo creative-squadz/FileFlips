@@ -1,6 +1,7 @@
 import siteInfo from "../assets/Site_Details/Primary/siteInfo";
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 export default function SignUp() {
   const [userCredentials, setUserCredentials] = useState({
     first_name: "",
@@ -180,6 +181,46 @@ export default function SignUp() {
   const [cnfPassword, setCNFPassword] = useState("");
   const errorRef = useRef(null);
   const navigate = useNavigate();
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    errorRef.current.textContent = "";
+    errorRef.current.style.color = "";
+    const url = `${process.env.REACT_APP_BACKEND_HOST}/google-signin`;
+    try {
+      const response = await fetch(url, {
+        headers: { "content-type": "application/json" },
+        method: "POST",
+        body: JSON.stringify({ credential: credentialResponse.credential }),
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        errorRef.current.textContent = data.message;
+        return;
+      }
+      errorRef.current.style.color = "green";
+      errorRef.current.textContent = data.message;
+      data.planDetails &&
+        window.localStorage.setItem(
+          "tempUser",
+          JSON.stringify({
+            used: data.planDetails.used,
+            max: data.planDetails.max,
+            maxSize: data.planDetails.maxSize,
+            formatAllowed: data.planDetails.conversion_allowed,
+          })
+        );
+      setTimeout(() => {
+        navigate(`/${data.encryptedEmail}/home`, { replace: true });
+      }, 1500);
+    } catch (error) {
+      errorRef.current.textContent = "Google sign-in failed. Please try again.";
+    }
+  };
+
+  const handleGoogleError = () => {
+    errorRef.current.textContent = "Google sign-in was cancelled or failed.";
+  };
 
   const checkNames = (name) => {
     const nameRegex = /^[a-zA-Z]+$/;
@@ -565,6 +606,21 @@ export default function SignUp() {
           <p>Sign Up</p>
           <p className="hidden w-5 aspect-square rounded-full border-4 border-l-violet-500 border-r-green-500 border-b-orange-600 border-t-red-500 animate-[spin_0.3s_linear_infinite]"></p>
         </button>
+        <article className="flex items-center gap-3 w-full sm:w-3/4 mx-auto my-1">
+          <hr className="flex-1 border-gray-300" />
+          <span className="text-gray-400 text-sm whitespace-nowrap">or continue with</span>
+          <hr className="flex-1 border-gray-300" />
+        </article>
+        <article className="flex justify-center">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            text="signup_with"
+            shape="rectangular"
+            size="large"
+            width="280"
+          />
+        </article>
         <span className="text-center">
           Already have an account?{" "}
           <Link to={"/signin"} className="text-primary font-semibold">

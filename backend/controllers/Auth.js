@@ -5,6 +5,8 @@ const crypto = require("crypto");
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { OAuth2Client } = require("google-auth-library");
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const signIn = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -149,6 +151,111 @@ const signUp = async (req, res) => {
 
 const signOut = async (req, res) => {};
 
+const googleSignIn = async (req, res) => {
+  const { credential } = req.body;
+  try {
+    if (!credential) {
+      return res.status(400).json({ message: "Google credential is required" });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, given_name, family_name, picture } = payload;
+
+    if (!email) {
+      return res.status(400).json({ message: "Unable to get email from Google" });
+    }
+
+    let user = await prisma.users.findUnique({
+      where: { email: email },
+    });
+
+    let isNewUser = false;
+
+    if (!user) {
+      isNewUser = true;
+      const randomPassword = crypto.randomBytes(32).toString("hex");
+      const hashedPassword = await bcrypt.hash(randomPassword, 5);
+      const initialRefToken = `google-user : ${email}`;
+
+      user = await prisma.users.create({
+        data: {
+          first_name: given_name || "Google",
+          middle_name: null,
+          last_name: family_name || "User",
+          gender: "other",
+          mobile_no: `0000000000`,
+          email: email,
+          password: hashedPassword,
+          reference_token: initialRefToken,
+          google_id: googleId,
+          auth_provider: "google",
+        },
+      });
+
+      if (!user) {
+        return res.status(500).json({ message: "Failed to create account" });
+      }
+      console.log(`New Google user created: ${email}`);
+    } else if (!user.google_id) {
+      await prisma.users.update({
+        where: { id: user.id },
+        data: { google_id: googleId, auth_provider: "google" },
+      });
+    }
+
+    const accessToken = jwt.sign(
+      { email: user.email },
+      process.env.ACCESS_TOKEN_KEY,
+      { expiresIn: "1d" }
+    );
+    const referenceToken = jwt.sign(
+      { email: user.email },
+      process.env.REFERENCE_TOKEN_KEY,
+      { expiresIn: "1d" }
+    );
+
+    await prisma.users.update({
+      where: { id: user.id },
+      data: { reference_token: referenceToken },
+    });
+
+    const encryptedEmail = encrypt(email);
+    res.cookie("jwt", referenceToken, {
+      sameSite: "None",
+      httpOnly: true,
+      secure: true,
+      maxAge: 5 * 60 * 60 * 1000,
+    });
+    res.cookie("emenc", encryptedEmail, {
+      sameSite: "None",
+      httpOnly: true,
+      secure: true,
+      maxAge: 5 * 60 * 60 * 1000,
+    });
+
+    const ExistingPlan = await prisma.paidUser.findUnique({
+      where: { email: user.email },
+    });
+
+    console.log(`Google sign-in successful: ${email}`);
+    return res.status(200).json({
+      message: isNewUser
+        ? "Account created and signed in via Google"
+        : "Successfully signed in via Google",
+      accessToken: accessToken,
+      encryptedEmail: encryptedEmail,
+      planDetails: ExistingPlan ? ExistingPlan : false,
+    });
+  } catch (error) {
+    console.log("Google sign-in error:", error);
+    return res.status(500).json({ message: "Google sign-in failed. Please try again." });
+  }
+};
+
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
   try {
@@ -234,4 +341,4 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { signIn, signUp, signOut, forgotPassword, resetPassword };
+module.exports = { signIn, signUp, signOut, forgotPassword, resetPassword, googleSignIn };

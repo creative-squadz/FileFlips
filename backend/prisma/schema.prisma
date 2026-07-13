@@ -21,6 +21,8 @@ model Users {
   reference_token   String    @unique(map: "reference_token_UNIQUE") @db.VarChar(512)
   reset_token       String?   @unique(map: "reset_token_UNIQUE") @db.VarChar(512)
   reset_token_expiry DateTime? @db.DateTime()
+  google_id         String?   @unique(map: "google_id_UNIQUE") @db.VarChar(128)
+  auth_provider     String?   @db.VarChar(45)
 }
 
 model GuestUser {
