@@ -68,7 +68,7 @@ export default function ProfileDropdown({ size }) {
 
           <div className="py-2">
             <Link
-              to={`/${params.email}/forgot-password`}
+              to="/forgot_password"
               onClick={() => setOpen(false)}
               className="flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             >
