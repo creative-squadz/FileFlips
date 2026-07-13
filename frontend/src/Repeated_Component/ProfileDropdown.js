@@ -13,7 +13,7 @@ export default function ProfileDropdown({ size }) {
     const fetchProfile = async () => {
       try {
         const res = await fetch(
-          `${process.env.REACT_APP_BACKEND_HOST}/auth/profile/${params.email}`
+          `${process.env.REACT_APP_BACKEND_HOST}/profile/${params.email}`
         );
         const data = await res.json();
         if (res.ok) setProfile(data.user);
