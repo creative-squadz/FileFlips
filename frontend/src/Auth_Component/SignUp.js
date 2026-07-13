@@ -1,7 +1,7 @@
 import siteInfo from "../assets/Site_Details/Primary/siteInfo";
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
+import GoogleSignInButton from "./GoogleSignInButton";
 export default function SignUp() {
   const [userCredentials, setUserCredentials] = useState({
     first_name: "",
@@ -612,13 +612,10 @@ export default function SignUp() {
           <hr className="flex-1 border-gray-300" />
         </article>
         <article className="flex justify-center">
-          <GoogleLogin
+          <GoogleSignInButton
             onSuccess={handleGoogleSuccess}
             onError={handleGoogleError}
             text="signup_with"
-            shape="rectangular"
-            size="large"
-            width="280"
           />
         </article>
         <span className="text-center">

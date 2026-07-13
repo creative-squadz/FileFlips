@@ -1,7 +1,6 @@
 import { StrictMode } from 'react';
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./index.css";
 import App from "./App";
 import SignIn from "./Auth_Component/SignIn";
@@ -105,8 +104,6 @@ function Root() {
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <StrictMode>
-    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID || ""}>
-      <Root />
-    </GoogleOAuthProvider>
+    <Root />
   </StrictMode>
 );

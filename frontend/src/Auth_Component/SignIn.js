@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
-import { GoogleLogin } from "@react-oauth/google";
+import GoogleSignInButton from "./GoogleSignInButton";
 import siteInfo from "../assets/Site_Details/Primary/siteInfo";
 export default function SignIn() {
   const [userCredentials, setUserCredentials] = useState({
@@ -221,13 +221,10 @@ export default function SignIn() {
           <hr className="flex-1 border-gray-300" />
         </article>
         <article className="flex justify-center">
-          <GoogleLogin
+          <GoogleSignInButton
             onSuccess={handleGoogleSuccess}
             onError={handleGoogleError}
             text="signin_with"
-            shape="rectangular"
-            size="large"
-            width="280"
           />
         </article>
         <span className="text-center">
