@@ -611,14 +611,17 @@ const response = await fetch(url, {
           <article className="grid grid-cols-2 md:grid-cols-4 w-full gap-4">
             {category.map((item, index) => {
               const parts = item.name.split(" to ");
-              const fromFormat = parts[0];
-              const toFormat = parts[1];
+              const isConverter = parts.length === 2;
+              const fromFormat = isConverter ? parts[0] : null;
+              const toFormat = isConverter ? parts[1] : null;
               const iconColor =
                 fromFormat === "PDF"
                   ? "text-red-500"
                   : fromFormat === "DOCX"
                   ? "text-blue-500"
-                  : "text-green-600";
+                  : fromFormat === "XLSX"
+                  ? "text-green-600"
+                  : "text-red-500";
               return (
                 <Link
                   to={params.email ? item.path : "/signin"}
@@ -626,11 +629,15 @@ const response = await fetch(url, {
                   className="flex flex-col gap-3 items-center border-2 rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all p-6 grow bg-white cursor-pointer"
                 >
                   <item.icon className={`text-7xl ${iconColor}`} />
-                  <p className="text-lg font-bold">
-                    <span className="text-gray-800">{fromFormat}</span>
-                    <span className="text-primary mx-1">to</span>
-                    <span className="text-gray-800">{toFormat}</span>
-                  </p>
+                  {isConverter ? (
+                    <p className="text-lg font-bold">
+                      <span className="text-gray-800">{fromFormat}</span>
+                      <span className="text-primary mx-1">to</span>
+                      <span className="text-gray-800">{toFormat}</span>
+                    </p>
+                  ) : (
+                    <p className="text-lg font-bold text-gray-800">{item.name}</p>
+                  )}
                 </Link>
               );
             })}

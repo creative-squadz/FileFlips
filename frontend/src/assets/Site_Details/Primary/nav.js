@@ -2,7 +2,7 @@ import { SiConvertio } from "react-icons/si";
 import { FaFilePdf, FaFileWord, FaFileExcel } from "react-icons/fa";
 import { LuFiles } from "react-icons/lu";
 import { IoIosLogIn, IoIosLogOut } from "react-icons/io";
-import { MdAppRegistration } from "react-icons/md";
+import { MdAppRegistration, MdOutlineMerge } from "react-icons/md";
 
 export default function Nav(email) {
   const e = email || ":email";
@@ -18,6 +18,7 @@ export default function Nav(email) {
         { id: 2, name: "PDF to XLSX", path: `/${e}/app/pdf_to_xlsx`, icon: FaFilePdf },
         { id: 3, name: "DOCX to PDF", path: `/${e}/app/docx_converter`, icon: FaFileWord },
         { id: 4, name: "XLSX to PDF", path: `/${e}/app/xlsx_converter`, icon: FaFileExcel },
+        { id: 5, name: "PDF Merger", path: `/${e}/app/pdf_merger`, icon: MdOutlineMerge },
       ],
     },
 
