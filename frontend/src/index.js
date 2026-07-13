@@ -89,7 +89,7 @@ function Root() {
     },
     //Invoice Templates
     {
-      path: "/:email/home/plans/templates/template1",
+      path: "/:email/:something/plans/templates/template1",
       element: <Template1 />,
     },
     // delete after final build
