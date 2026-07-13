@@ -30,6 +30,7 @@ export default function Header({ size }) {
     <header className="sticky top-0 bg-white flex flex-nowrap gap-4 py-2 px-4 items-center shadow-[0.1rem_0.1rem_0.2rem_0.1rem_gray] whitespace-nowrap z-10">
       <Link
         to={params.email ? `/${params.email}/home` : "/"}
+        reloadDocument
         className="flex gap-2 items-center"
       >
         <img
@@ -105,6 +106,7 @@ export default function Header({ size }) {
     <header className="sticky top-0 bg-white flex flex-nowrap gap-4 py-2 px-4 items-center shadow-[0.1rem_0.1rem_0.2rem_0.1rem_gray] whitespace-nowrap justify-between z-10">
       <Link
         to={params.email ? `/${params.email}/home` : "/"}
+        reloadDocument
         className="flex gap-2 items-center"
       >
         <img
