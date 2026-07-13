@@ -1,5 +1,7 @@
 const prisma = require("../shortcut/prisma_initilization");
 const encrypt = require("../utils/usefulFunction/encryption");
+const sendResetEmail = require("../utils/sendEmail");
+const crypto = require("crypto");
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -147,4 +149,89 @@ const signUp = async (req, res) => {
 
 const signOut = async (req, res) => {};
 
-module.exports = { signIn, signUp, signOut };
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+    const user = await prisma.users.findUnique({
+      where: { email: email },
+    });
+    if (!user) {
+      return res.status(200).json({
+        message: "If an account exists with this email, you will receive a password reset link.",
+      });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000);
+
+    await prisma.users.update({
+      where: { id: user.id },
+      data: {
+        reset_token: resetToken,
+        reset_token_expiry: resetTokenExpiry,
+      },
+    });
+
+    await sendResetEmail(user.email, resetToken);
+
+    console.log(`Password reset email sent to ${user.email}`);
+    return res.status(200).json({
+      message: "If an account exists with this email, you will receive a password reset link.",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong. Please try again later." });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+  try {
+    if (!token || !password) {
+      return res.status(400).json({ message: "Token and password are required" });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ message: "Password must be at least 8 characters long" });
+    }
+
+    const user = await prisma.users.findUnique({
+      where: { reset_token: token },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired reset token" });
+    }
+
+    if (!user.reset_token_expiry || new Date() > user.reset_token_expiry) {
+      await prisma.users.update({
+        where: { id: user.id },
+        data: { reset_token: null, reset_token_expiry: null },
+      });
+      return res.status(400).json({ message: "Reset token has expired. Please request a new one." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 5);
+
+    await prisma.users.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        reset_token: null,
+        reset_token_expiry: null,
+      },
+    });
+
+    console.log(`Password successfully reset for ${user.email}`);
+    return res.status(200).json({ message: "Password has been reset successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong. Please try again later." });
+  }
+};
+
+module.exports = { signIn, signUp, signOut, forgotPassword, resetPassword };

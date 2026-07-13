@@ -18,6 +18,12 @@
 | `CLOUDCONVERT_API_KEY1` | CloudConvert API key (used by middlewares/convertController.js - legacy) | No |
 | `CLOUDCONVERT_API_TESTING_KEY` | CloudConvert API key for actual conversion | Yes |
 | `BACKEND_HOST` | Backend host URL for internal calls (e.g., `http://localhost:8080`) | Yes |
+| `SMTP_HOST` | SMTP server host (e.g., `smtp.gmail.com`) | Yes |
+| `SMTP_PORT` | SMTP server port (e.g., `587`) | Yes |
+| `SMTP_USER` | SMTP username/email for sending emails | Yes |
+| `SMTP_PASS` | SMTP password or app-specific password | Yes |
+| `EMAIL_FROM` | Sender email address (defaults to `SMTP_USER`) | No |
+| `FRONTEND_URL` | Frontend URL for reset link (e.g., `http://localhost:3000`) | Yes |
 
 ### Frontend (`frontend/.env`)
 
@@ -43,17 +49,22 @@
 - Create account at https://razorpay.com
 - Get API key & secret from Razorpay Dashboard → Settings → API Keys
 
-### 4. Google APIs (Optional - for Google Drive file picker)
+### 4. SMTP Email Service (Required for Forgot Password)
+- Use Gmail, SendGrid, Mailgun, or any SMTP provider
+- For Gmail: enable 2FA, then create an App Password at https://myaccount.google.com/apppasswords
+- Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `FRONTEND_URL` in backend `.env`
+
+### 5. Google APIs (Optional - for Google Drive file picker)
 - Create a project at https://console.cloud.google.com
 - Enable Google Picker API and Google Drive API
 - Create OAuth 2.0 credentials (Web application type)
 - Set `REACT_APP_GOOGLE_CLIENT_ID` and `REACT_APP_GOOGLE_API_KEY`
 
-### 5. Dropbox (Optional)
+### 6. Dropbox (Optional)
 - The Dropbox picker uses a hardcoded app key in `frontend/public/index.html`
 - Replace `data-app-key="xcerhsq0e7uj6ad"` with your own Dropbox app key
 
-### 6. OneDrive (Optional)
+### 7. OneDrive (Optional)
 - Register an app at https://portal.azure.com → App registrations
 - Set `REACT_APP_ONEDRIVE_CLIENT_ID`
 
@@ -103,6 +114,8 @@ npm start
 | POST | `/signin` | User login |
 | POST | `/signup` | User registration |
 | POST | `/signout` | User logout |
+| POST | `/forgot_password` | Send password reset email |
+| POST | `/reset_password/:token` | Reset password with token |
 | POST | `/api/convert` | File conversion (multipart) |
 | POST | `/user_entry` | Track file conversion usage |
 | GET | `/get_plan` | Get all subscription plans |

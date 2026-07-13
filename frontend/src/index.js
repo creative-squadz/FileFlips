@@ -7,6 +7,7 @@ import SignIn from "./Auth_Component/SignIn";
 import SignUp from "./Auth_Component/SignUp";
 import SignOut from "./Auth_Component/SignOut";
 import ForgotPassword from "./Auth_Component/ForgotPassword";
+import ResetPassword from "./Auth_Component/ResetPassword";
 import Plan from "./Plans/Plan";
 
 //Invoice Template
@@ -81,6 +82,10 @@ function Root() {
     {
       path: "/forgot_password",
       element: <ForgotPassword />,
+    },
+    {
+      path: "/reset_password/:token",
+      element: <ResetPassword />,
     },
     //Invoice Templates
     {
