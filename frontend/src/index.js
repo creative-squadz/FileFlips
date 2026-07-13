@@ -18,6 +18,7 @@ import PDFconverter from "./Separate_Converter_Page/pdfConverter";
 import PDFeditor from "./Separate_Converter_Page/pdfEditor";
 import PDFmerger from "./Separate_Converter_Page/pdfMerger";
 import PPTconverter from "./Separate_Converter_Page/pptConverter";
+import PDFtoXLSX from "./Separate_Converter_Page/pdfToXlsx";
 import XLSXconverter from "./Separate_Converter_Page/xlsxConverter";
 
 //only testing purpose
@@ -52,6 +53,10 @@ function Root() {
     {
       path: "/:email/:something/pdf_converter",
       element: <PDFconverter />,
+    },
+    {
+      path: "/:email/:something/pdf_to_xlsx",
+      element: <PDFtoXLSX />,
     },
     {
       path: "/:email/:something/pdf_editor",

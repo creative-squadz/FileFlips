@@ -608,17 +608,32 @@ const response = await fetch(url, {
           className="p-8 w-full rounded-md flex flex-col gap-4"
         >
           <h3 className="text-2xl font-semibold">File Converter Categories</h3>
-          <article className="grid grid-cols-1 xsm:grid-cols-2 md:grid-cols-3 w-full gap-4">
-            {category.map((item, index) => (
-              <Link
-                to={params.email ? item.path : "/signin"}
-                key={`category/${index}`}
-                className="flex flex-col gap-2 items-center border-2 rounded-md shadow-[0.1rem_0.1rem_0.5rem_0.05rem_gray] p-4 grow"
-              >
-                <item.icon className="text-6xl text-gray-500" />
-                <p className="">{item.name}</p>
-              </Link>
-            ))}
+          <article className="grid grid-cols-2 md:grid-cols-4 w-full gap-4">
+            {category.map((item, index) => {
+              const parts = item.name.split(" to ");
+              const fromFormat = parts[0];
+              const toFormat = parts[1];
+              const iconColor =
+                fromFormat === "PDF"
+                  ? "text-red-500"
+                  : fromFormat === "DOCX"
+                  ? "text-blue-500"
+                  : "text-green-600";
+              return (
+                <Link
+                  to={params.email ? item.path : "/signin"}
+                  key={`category/${index}`}
+                  className="flex flex-col gap-3 items-center border-2 rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all p-6 grow bg-white cursor-pointer"
+                >
+                  <item.icon className={`text-7xl ${iconColor}`} />
+                  <p className="text-lg font-bold">
+                    <span className="text-gray-800">{fromFormat}</span>
+                    <span className="text-primary mx-1">to</span>
+                    <span className="text-gray-800">{toFormat}</span>
+                  </p>
+                </Link>
+              );
+            })}
           </article>
         </article>
       )}

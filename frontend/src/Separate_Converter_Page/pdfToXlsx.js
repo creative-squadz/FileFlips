@@ -1,0 +1,13 @@
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+export default function PDFtoXLSX() {
+  const navigate = useNavigate();
+  const { email } = useParams();
+
+  useEffect(() => {
+    navigate(`/${email}/home`, { replace: true, state: { input: "pdf", output: "xlsx" } });
+  }, [navigate, email]);
+
+  return null;
+}

@@ -1,8 +1,5 @@
 import { SiConvertio } from "react-icons/si";
 import { FaFilePdf, FaFileWord, FaFileExcel } from "react-icons/fa";
-import { PiArrowsMergeBold } from "react-icons/pi";
-import { MdEditDocument } from "react-icons/md";
-import { AiFillFilePpt } from "react-icons/ai";
 import { LuFiles } from "react-icons/lu";
 import { IoIosLogIn, IoIosLogOut } from "react-icons/io";
 import { MdAppRegistration } from "react-icons/md";
@@ -17,12 +14,10 @@ export default function Nav(email) {
       path: `/${e}/home#converters`,
       icon: SiConvertio,
       submenu: [
-        { id: 1, name: "PDF Converter", path: `/${e}/app/pdf_converter`, icon: FaFilePdf },
-        { id: 2, name: "PDF Merger", path: `/${e}/app/pdf_merger`, icon: PiArrowsMergeBold },
-        { id: 3, name: "PDF Editor", path: `/${e}/app/pdf_editor`, icon: MdEditDocument },
-        { id: 4, name: "DOCX Converter", path: `/${e}/app/docx_converter`, icon: FaFileWord },
-        { id: 5, name: "XLSX Converter", path: `/${e}/app/xlsx_converter`, icon: FaFileExcel },
-        { id: 6, name: "PPT Converter", path: `/${e}/app/ppt_converter`, icon: AiFillFilePpt },
+        { id: 1, name: "PDF to DOCX", path: `/${e}/app/pdf_converter`, icon: FaFilePdf },
+        { id: 2, name: "PDF to XLSX", path: `/${e}/app/pdf_to_xlsx`, icon: FaFilePdf },
+        { id: 3, name: "DOCX to PDF", path: `/${e}/app/docx_converter`, icon: FaFileWord },
+        { id: 4, name: "XLSX to PDF", path: `/${e}/app/xlsx_converter`, icon: FaFileExcel },
       ],
     },
 
